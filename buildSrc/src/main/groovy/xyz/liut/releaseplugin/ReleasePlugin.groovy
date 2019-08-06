@@ -32,7 +32,7 @@ class ReleasePlugin implements Plugin<Project> {
         project.extensions.create('outputApk', ReleaseExtension)
 
         // 添加打包 task
-        project.task('release', dependsOn: 'assemble', group: 'deploy', description: 'assemble All and rename to ./output') {
+        project.task('release', dependsOn: 'assembleRelease', group: 'deploy', description: 'assemble All and rename to ./output') {
             doLast {
                 final DomainObjectSet<ApplicationVariant> variants = project.android.applicationVariants
 
