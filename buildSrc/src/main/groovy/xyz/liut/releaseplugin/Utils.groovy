@@ -30,6 +30,32 @@ static boolean execCommand(String cmd) {
 }
 
 /**
+ * 获取系统 uname
+ *
+ * @return uanme
+ */
+static String uname() {
+    def proc = "uname -s".execute()
+
+    String uname = "none"
+
+    proc.inputStream.eachLine {
+        // 结果只有一行
+        if (it != null)
+            uname = it
+        else
+            println "获取系统uname 为空"
+    }
+    proc.errorStream.eachLine {
+        System.err.println("ERROR: $it")
+        new RuntimeException("获取系统uname失败").printStackTrace()
+    }
+    proc.waitFor()
+
+    return uname
+}
+
+/**
  * 检查文件夹， 如果不存在则创建， 否则终止程序
  *
  * @param dirPath 待检查的文件夹

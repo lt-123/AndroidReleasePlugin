@@ -65,29 +65,38 @@ class ReleasePlugin implements Plugin<Project> {
 
                                 def outputFile = output.outputFile
 
-                                println outputFile
+                                if (outputFile.exists()) {
+                                    println outputFile
 
-                                // 根据模板生成文件名
-                                String finalFileName = fileName
-                                        .replace('$app', project.name)
-                                        .replace('$b', variant.buildType.name)
-                                        .replace('$f', variant.flavorName)
-                                        .replace('$vn', variant.versionName)
-                                        .replace('$vc', variant.versionCode.toString()) + ".apk"
+                                    // 根据模板生成文件名
+                                    String finalFileName = fileName
+                                            .replace('$app', project.name)
+                                            .replace('$b', variant.buildType.name)
+                                            .replace('$f', variant.flavorName)
+                                            .replace('$vn', variant.versionName)
+                                            .replace('$vc', variant.versionCode.toString()) + ".apk"
 
-                                Files.copy(
-                                        outputFile.toPath(),
-                                        new File(outputPath + finalFileName).absoluteFile.toPath(),
-                                        StandardCopyOption.REPLACE_EXISTING)
+                                    Files.copy(
+                                            outputFile.toPath(),
+                                            new File(outputPath + finalFileName).absoluteFile.toPath(),
+                                            StandardCopyOption.REPLACE_EXISTING)
 
 //                                list.add(new File("./output/${fileName}.apk"))
 
+                                }
                             }
                         })
 
 
                     }
                 })
+
+                String uname = Utils.uname()
+                switch (uname) {
+                    case "Darwin":  // mac
+                        Utils.execCommand("open $outputPath")
+                        break
+                }
             }
         }
 
