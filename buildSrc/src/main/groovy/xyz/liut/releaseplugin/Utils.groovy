@@ -1,5 +1,7 @@
 package xyz.liut.releaseplugin
 
+import java.lang.reflect.Field
+
 /**
  * 执行命令并返回执行结果是否成功
  *
@@ -71,6 +73,53 @@ static void checkAndDir(String dirPath) {
         throw new IllegalStateException("请先删除 ${file.absoluteFile}")
     }
 
+}
+
+// ===============
+
+
+static void printlnObject(Object object) {
+    if (null == object) {
+        println("obj", "null")
+        return
+    }
+
+    Class cls = object.getClass()
+
+    printlnObject(cls, object)
+
+}
+
+static void printlnObject(Class cls, Object object) {
+    if (null == cls) {
+        println("cls", "null")
+        return
+    }
+
+    System.out.println("------------------------------")
+
+    println("Class", cls.getName())
+
+    Field[] fields = cls.getDeclaredFields()
+    if (fields != null) {
+        for (Field f : fields) {
+            f.setAccessible(true)
+            try {
+                println(f.getName(), f.get(object))
+            } catch (Exception e) {
+                e.printStackTrace()
+            }
+        }
+
+    }
+
+    System.out.println("------------------------------")
+
+}
+
+
+private static void println(String tag, Object obj) {
+    System.out.println(tag + ": " + obj)
 }
 
 

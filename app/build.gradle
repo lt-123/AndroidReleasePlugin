@@ -18,6 +18,36 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    flavorDimensions "default"
+
+    productFlavors {
+        official {
+            dimension "default"
+
+            // 主机名
+            buildConfigField 'String', 'HOST', '"https://coapi.kindlelaw.com"'
+            // websocket
+            buildConfigField 'String', 'WEBSOCKET_LINK', '"wss://kwss.kindlelaw.com:9501"'
+            // websocket type
+            buildConfigField 'String', 'WEBSOCKET_TYPE', '"www"'
+            // h5页面
+            buildConfigField 'String', 'H5_URL', '"https://h5.kindlelaw.com/"'
+            // rocketchat
+            buildConfigField 'String', 'ROCKET_URl', '"https://chat.kindlelaw.com"'
+        }
+
+        internal_test {
+            dimension "default"
+
+            buildConfigField 'String', 'HOST', '"https://devcoapi.kindlelaw.com/"'
+            buildConfigField 'String', 'WEBSOCKET_LINK', '"wss://web.kindlelaw.com:9501"'
+            buildConfigField 'String', 'WEBSOCKET_TYPE', '"web"'
+            buildConfigField 'String', 'H5_URL', '"https://devh5.kindlelaw.com/"'
+            buildConfigField 'String', 'ROCKET_URl', '"https://rocketchat.kindlelaw.com"'
+        }
+    }
+
 }
 
 dependencies {

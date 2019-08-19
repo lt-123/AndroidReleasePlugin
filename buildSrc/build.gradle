@@ -35,6 +35,7 @@ dependencies {
     compile localGroovy()
     // android plugin
     compile 'com.android.tools.build:gradle:3.4.2'
+    compile 'xyz.liut.logcat:logcat:0.1.1'
 }
 
 // 发布到本地
