@@ -5,7 +5,6 @@ import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.api.ApplicationVariant
 import com.android.build.gradle.api.BaseVariantOutput
 import com.android.build.gradle.internal.dsl.BuildType
-import com.android.build.gradle.internal.dsl.ProductFlavor
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -50,15 +49,12 @@ class ReleasePlugin implements Plugin<Project> {
 
         L.d "======================"
 
+        createTasks()
+        test()
+
         project.gradle.taskGraph.whenReady { taskGraph ->
             L.d "whenReadywhenReadywhenReadywhenReadywhenReadywhenReadywhenReadywhenReady"
-
-            createTasks()
-
-            test()
         }
-
-        L.d "2222222222222223333333333333"
     }
 
     def createTasks() {
@@ -77,23 +73,32 @@ class ReleasePlugin implements Plugin<Project> {
             }
         })
 
-        L.d "ffffffffffffff"
-        android.getProductFlavors().forEach(new Consumer<ProductFlavor>() {
-            @Override
-            void accept(ProductFlavor productFlavor) {
-                L.d productFlavor.toString()
-
-            }
-        })
-
-        android.applicationVariants.forEach(new Consumer<ApplicationVariant>() {
-            @Override
-            void accept(ApplicationVariant applicationVariant) {
-
-                L.d applicationVariant.toString()
-
-            }
-        })
+//        L.i "ffffffffffffff"
+//        android.productFlavors.forEach(new Consumer<ProductFlavor>() {
+//            @Override
+//            void accept(ProductFlavor productFlavor) {
+//                L.i productFlavor.toString()
+//
+//            }
+//        })
+//
+//        android.applicationVariants.forEach(new Consumer<ApplicationVariant>() {
+//            @Override
+//            void accept(ApplicationVariant applicationVariant) {
+//
+//                L.d applicationVariant.toString()
+//
+//            }
+//        })
+//
+//        L.e "333333333333333333"
+//        L.e android.flavorDimensionList.forEach(new Consumer<String>() {
+//            @Override
+//            void accept(String t) {
+//                L.e t
+//
+//            }
+//        })
 
     }
 
