@@ -52,26 +52,26 @@ android {
         }
     }
 
-    variantFilter { variant ->
-        def names = variant.flavors*.name
-
-        println names+"======="
-
-        // To check for a certain build type, use variant.buildType.name == "<buildType>"
-        if (names.contains("official") && variant.buildType.name == "debug") {
-            setIgnore(true)
-        }
-        if (names.contains("internal_test") && variant.buildType.name == "release") {
-            setIgnore(true)
-        }
-    }
+//    variantFilter { variant ->
+//        def names = variant.flavors*.name
+//
+//        println names+"======="
+//
+//        // To check for a certain build type, use variant.buildType.name == "<buildType>"
+//        if (names.contains("official") && variant.buildType.name == "debug") {
+//            setIgnore(true)
+//        }
+//        if (names.contains("internal_test") && variant.buildType.name == "release") {
+//            setIgnore(true)
+//        }
+//    }
 
 }
 
 outputApk {
-    fileName '$app-$b_$vn.$vc'
+    fileName = '$app-$b-$f-$vn.$vc'
 
-    outputPath '${project.rootDir}/output222/'
+    outputPath = './output222/'
 }
 
 dependencies {

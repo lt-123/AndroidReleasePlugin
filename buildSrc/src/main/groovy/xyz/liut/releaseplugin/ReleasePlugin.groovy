@@ -4,7 +4,9 @@ import com.android.build.gradle.AppExtension
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.api.ApplicationVariant
 import com.android.build.gradle.api.BaseVariantOutput
-import org.gradle.api.DomainObjectSet
+import com.android.build.gradle.internal.dsl.BuildType
+import com.android.build.gradle.internal.dsl.ProductFlavor
+import com.android.utils.StringHelper
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import xyz.liut.logcat.L
@@ -42,100 +44,135 @@ class ReleasePlugin implements Plugin<Project> {
         this.project = project
         this.rootProject = project.rootProject
         this.android = project.android
+        project.extensions.create('outputApk', ReleaseExtension)
+        this.releaseExtension = project.outputApk
 
         // log
         Logcat.handlers.add(new StdHandler(false, false))
 
-        // create Extension
-        createExtension()
+        project.gradle.beforeProject {
+            // init Extension
+            initExtension()
 
-        // task
-        createTask()
+            // task
+            createTasks()
+        }
     }
 
-    def createExtension() {
-        project.extensions.create('outputApk', ReleaseExtension)
-        releaseExtension = project.outputApk
-
+    /**
+     * 扩展参数
+     */
+    def initExtension() {
         L.i "createExtension"
 
-//        L.e new File(releaseExtension.outputPath).absolutePath
-//        L.e rootProject.outputApk.outputPath
+        def outputDir = project.rootDir.toString() + File.separator + releaseExtension.outputPath
 
+        Utils.checkAndDir(outputDir)
+
+        releaseExtension.outputPath = outputDir
+        L.d releaseExtension.outputPath
     }
 
-    def createTask() {
-        // 添加打包 task
-        project.task('release', dependsOn: 'assembleRelease', group: 'deploy', description: 'assemble All and rename to ./output') {
-            doLast {
+    /**
+     * 创建 tasks
+     */
+    def createTasks() {
+        // assemble All
+        createTask(null, null)
 
-                L.e new File(releaseExtension.outputPath).absolutePath
+        android.buildTypes.forEach(new Consumer<BuildType>() {
+            @Override
+            void accept(BuildType buildType) {
+                def buildTypeName = buildType.name
 
-                final DomainObjectSet<ApplicationVariant> variants = project.android.applicationVariants
+                // assemble buildType
+                createTask(buildTypeName, null)
 
-                String outputPath = project.outputApk.outputPath
-//                if (outputPath == null) {
-//                    outputPath = DEFAULT_OUTPUT_DIR
-//                }
-                String fileName = project.outputApk.fileName
-//                if (fileName == null) {
-//                    fileName = DEFAULT_FILE_NAME_FORMAT
-//                }
-
-                Utils.checkAndDir(outputPath)
-
-                L.d "outputPath = $outputPath"
-                L.d "fileName = ${fileName}"
-
-
-                // 遍历所有变种
-                variants.forEach(new Consumer<ApplicationVariant>() {
+                android.productFlavors.forEach(new Consumer<ProductFlavor>() {
                     @Override
-                    void accept(ApplicationVariant variant) {
-                        // 遍历所有输出
-                        variant.getOutputs().forEach(new Consumer<BaseVariantOutput>() {
+                    void accept(ProductFlavor productFlavor) {
+                        def flavorName = productFlavor.name
+
+                        createTask(buildTypeName, flavorName)
+                    }
+                })
+            }
+        })
+    }
+
+    /**
+     * 创建 task
+     *
+     * @param buildTypeName -
+     * @param flavorName -
+     */
+    def createTask(String buildTypeName, String flavorName) {
+        if (buildTypeName != null)
+            buildTypeName = StringHelper.capitalize(buildTypeName)
+        else
+            buildTypeName = ""
+        if (flavorName != null)
+            flavorName = StringHelper.capitalize(flavorName)
+        else
+            flavorName = ""
+
+        def base = "$flavorName$buildTypeName"
+
+        def taskName = "release$base"
+        def dependsOn = "assemble$base"
+
+        L.i "create task: $taskName"
+
+        project.task(taskName, dependsOn: dependsOn, group: 'deploy', description: "assemble and rename to $releaseExtension.outputPath") {
+            doLast {
+                L.e "release$buildTypeName$flavorName"
+
+                android.applicationVariants.forEach(new Consumer<ApplicationVariant>() {
+                    @Override
+                    void accept(ApplicationVariant applicationVariant) {
+                        applicationVariant.outputs.forEach(new Consumer<BaseVariantOutput>() {
                             @Override
-                            void accept(BaseVariantOutput output) {
+                            void accept(BaseVariantOutput baseVariantOutput) {
 
-                                def outputFile = output.outputFile
+                                def outputFile = baseVariantOutput.outputFile
+                                if (!outputFile.exists()) {
+                                    return
+                                }
+                                L.d outputFile
 
-                                if (outputFile.exists()) {
-                                    L.d outputFile
+                                boolean b = buildTypeName == "" || flavorName == "" || (buildTypeName.equalsIgnoreCase(applicationVariant.buildType.name) && flavorName.equalsIgnoreCase(applicationVariant.flavorName))
 
+                                if (b) {
                                     // 根据模板生成文件名
-                                    String finalFileName = fileName
+                                    String finalFileName = releaseExtension.fileName
                                             .replace('$app', project.name)
-                                            .replace('$b', variant.buildType.name)
-                                            .replace('$f', variant.flavorName)
-                                            .replace('$vn', variant.versionName)
-                                            .replace('$vc', variant.versionCode.toString()) + ".apk"
+                                            .replace('$b', applicationVariant.buildType.name)
+                                            .replace('$f', applicationVariant.flavorName)
+                                            .replace('$vn', applicationVariant.versionName)
+                                            .replace('$vc', applicationVariant.versionCode.toString())
+
+                                    if (applicationVariant.signingReady) {
+                                        finalFileName = finalFileName + ".apk"
+                                    } else {
+                                        finalFileName = finalFileName + "-unsigned.apk"
+                                    }
 
                                     Files.copy(
                                             outputFile.toPath(),
-                                            new File(outputPath + finalFileName).absoluteFile.toPath(),
+                                            new File(releaseExtension.outputPath + File.separator + finalFileName).absoluteFile.toPath(),
                                             StandardCopyOption.REPLACE_EXISTING)
 
-//                                list.add(new File("./output/${fileName}.apk"))
-
+//                                        list.add(new File("./output/${fileName}.apk"))
                                 }
                             }
                         })
 
-
                     }
                 })
 
-                String uname = Utils.uname()
-                switch (uname) {
-                    case "Darwin":  // mac
-//                        Utils.execCommand("open $outputPath")
-                        break
-                }
             }
         }
-
     }
-
 
 }
 
