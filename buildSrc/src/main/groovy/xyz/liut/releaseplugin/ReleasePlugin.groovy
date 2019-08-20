@@ -4,7 +4,6 @@ import com.android.build.gradle.AppExtension
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.api.ApplicationVariant
 import com.android.build.gradle.api.BaseVariantOutput
-import com.android.build.gradle.internal.dsl.BuildType
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -21,18 +20,19 @@ import java.util.function.Consumer
  */
 class ReleasePlugin implements Plugin<Project> {
 
+    private Project rootProject
+
     private Project project
 
     private AppExtension android
 
-    private ReleaseExtension extension
+    private ReleaseExtension releaseExtension
 
 //    private static String DEFAULT_OUTPUT_DIR = './output/'
 //    private static String DEFAULT_FILE_NAME_FORMAT = '$app-$b-$f_$vn.$vc'
 
     @Override
     void apply(Project project) {
-
         // 判断是否是 Android 项目
         def app = project.plugins.withType(AppPlugin)
         if (!app) {
@@ -40,76 +40,38 @@ class ReleasePlugin implements Plugin<Project> {
         }
 
         this.project = project
+        this.rootProject = project.rootProject
         this.android = project.android
-        // create Extension
-        project.extensions.create('outputApk', ReleaseExtension)
-        this.extension = project.outputApk
 
+        // log
         Logcat.handlers.add(new StdHandler(false, false))
 
-        L.d "======================"
+        // create Extension
+        createExtension()
 
-        createTasks()
-        test()
-
-        project.gradle.taskGraph.whenReady { taskGraph ->
-            L.d "whenReadywhenReadywhenReadywhenReadywhenReadywhenReadywhenReadywhenReady"
-        }
+        // task
+        createTask()
     }
 
-    def createTasks() {
-//        project.task
+    def createExtension() {
+        project.extensions.create('outputApk', ReleaseExtension)
+        releaseExtension = project.outputApk
 
-        L.d android.toString()
+        L.i "createExtension"
 
-        Utils.printlnObject(android)
-        Utils.printlnObject(extension)
-
-        L.d "bbbbbbbbbbbb"
-        android.buildTypes.forEach(new Consumer<BuildType>() {
-            @Override
-            void accept(BuildType buildType) {
-                L.d buildType.toString()
-            }
-        })
-
-//        L.i "ffffffffffffff"
-//        android.productFlavors.forEach(new Consumer<ProductFlavor>() {
-//            @Override
-//            void accept(ProductFlavor productFlavor) {
-//                L.i productFlavor.toString()
-//
-//            }
-//        })
-//
-//        android.applicationVariants.forEach(new Consumer<ApplicationVariant>() {
-//            @Override
-//            void accept(ApplicationVariant applicationVariant) {
-//
-//                L.d applicationVariant.toString()
-//
-//            }
-//        })
-//
-//        L.e "333333333333333333"
-//        L.e android.flavorDimensionList.forEach(new Consumer<String>() {
-//            @Override
-//            void accept(String t) {
-//                L.e t
-//
-//            }
-//        })
+//        L.e new File(releaseExtension.outputPath).absolutePath
+//        L.e rootProject.outputApk.outputPath
 
     }
 
-    def test(){
+    def createTask() {
         // 添加打包 task
         project.task('release', dependsOn: 'assembleRelease', group: 'deploy', description: 'assemble All and rename to ./output') {
             doLast {
+
+                L.e new File(releaseExtension.outputPath).absolutePath
+
                 final DomainObjectSet<ApplicationVariant> variants = project.android.applicationVariants
-
-//                ReleaseExtension releaseExtension = project.outputApk
-
 
                 String outputPath = project.outputApk.outputPath
 //                if (outputPath == null) {

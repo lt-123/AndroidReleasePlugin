@@ -13,6 +13,10 @@ android {
 //        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -50,13 +54,24 @@ android {
 
     variantFilter { variant ->
         def names = variant.flavors*.name
+
+        println names+"======="
+
         // To check for a certain build type, use variant.buildType.name == "<buildType>"
-        if (names.contains("internal_test") && variant.buildType.name == "debug") {
-            // Gradle ignores any variants that satisfy the conditions above.
+        if (names.contains("official") && variant.buildType.name == "debug") {
+            setIgnore(true)
+        }
+        if (names.contains("internal_test") && variant.buildType.name == "release") {
             setIgnore(true)
         }
     }
 
+}
+
+outputApk {
+    fileName '$app-$b_$vn.$vc'
+
+    outputPath '${project.rootDir}/output222/'
 }
 
 dependencies {
