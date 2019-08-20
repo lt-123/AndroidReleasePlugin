@@ -12,6 +12,7 @@ import org.gradle.api.Project
 import xyz.liut.logcat.L
 import xyz.liut.logcat.Logcat
 import xyz.liut.logcat.handler.StdHandler
+import xyz.liut.releaseplugin.task.JiaguTask
 
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
@@ -123,9 +124,12 @@ class ReleasePlugin implements Plugin<Project> {
 
         L.i "create task: $taskName"
 
-        project.task(taskName, dependsOn: dependsOn, group: 'deploy', description: "assemble and rename to $releaseExtension.outputPath") {
+        def releaseTask = project.task(taskName, dependsOn: dependsOn, group: 'deploy', description: "assemble and rename to $releaseExtension.outputPath") {
             doLast {
                 L.e "release$buildTypeName$flavorName"
+
+                List<File> files = new ArrayList<>()
+//                outputs.files = files
 
                 android.applicationVariants.forEach(new Consumer<ApplicationVariant>() {
                     @Override
@@ -162,7 +166,7 @@ class ReleasePlugin implements Plugin<Project> {
                                             new File(releaseExtension.outputPath + File.separator + finalFileName).absoluteFile.toPath(),
                                             StandardCopyOption.REPLACE_EXISTING)
 
-//                                        list.add(new File("./output/${fileName}.apk"))
+                                    files.add(new File(releaseExtension.outputPath + File.separator + finalFileName))
                                 }
                             }
                         })
@@ -172,6 +176,17 @@ class ReleasePlugin implements Plugin<Project> {
 
             }
         }
+
+        def jiaguTaskName = "jiagu$base"
+
+        project.task(jiaguTaskName, type: JiaguTask, dependsOn: releaseTask, group: 'deploy', description: "jiagu and rename to $releaseExtension.outputPath") {
+//            doLast {
+//
+//                L.e jiaguTaskName
+//
+//            }
+        }
+
     }
 
 }
