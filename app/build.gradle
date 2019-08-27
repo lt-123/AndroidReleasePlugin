@@ -12,6 +12,10 @@ android {
         versionName "1.0"
 //        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
+//    sig liut liut1123
+
+
     buildTypes {
         debug {
             minifyEnabled false

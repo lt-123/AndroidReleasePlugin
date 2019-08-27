@@ -16,6 +16,7 @@ import xyz.liut.releaseplugin.task.JiaguTask
 
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
+import java.util.function.BiConsumer
 import java.util.function.Consumer
 
 /**
@@ -30,6 +31,8 @@ class ReleasePlugin implements Plugin<Project> {
     private AppExtension android
 
     private ReleaseExtension releaseExtension
+
+    private Map<String, String> localPropertiesMap
 
 //    private static String DEFAULT_OUTPUT_DIR = './output/'
 //    private static String DEFAULT_FILE_NAME_FORMAT = '$app-$b-$f_$vn.$vc'
@@ -52,6 +55,11 @@ class ReleasePlugin implements Plugin<Project> {
         Logcat.handlers.add(new StdHandler(false, false))
 
         project.gradle.beforeProject {
+            L.i "beforeProject"
+
+            // local.properties
+            initLocalProperties()
+
             // init Extension
             initExtension()
 
@@ -59,6 +67,27 @@ class ReleasePlugin implements Plugin<Project> {
             createTasks()
         }
     }
+
+    /**
+     * 读取 local.properties 到 localPropertiesMap
+     */
+    def initLocalProperties() {
+        localPropertiesMap = new HashMap<>()
+
+        String localProperties = rootProject.projectDir.toString() + "/local.properties"
+        Properties properties = new Properties()
+        properties.load(new FileInputStream(new File(localProperties)))
+        properties.forEach(new BiConsumer<String, String>() {
+            @Override
+            void accept(String key, String value) {
+                localPropertiesMap.put(key, value)
+                L.d "localProperties $key = $value"
+            }
+        })
+
+
+    }
+
 
     /**
      * 扩展参数
@@ -131,9 +160,14 @@ class ReleasePlugin implements Plugin<Project> {
                 List<File> files = new ArrayList<>()
 //                outputs.files = files
 
+                L.e "applicationVariant size = ${android.applicationVariants.size()}"
+
                 android.applicationVariants.forEach(new Consumer<ApplicationVariant>() {
                     @Override
                     void accept(ApplicationVariant applicationVariant) {
+
+                        L.e "applicationVariant outputs size = ${applicationVariant.outputs.size()} ${applicationVariant.name}"
+
                         applicationVariant.outputs.forEach(new Consumer<BaseVariantOutput>() {
                             @Override
                             void accept(BaseVariantOutput baseVariantOutput) {
@@ -179,12 +213,11 @@ class ReleasePlugin implements Plugin<Project> {
 
         def jiaguTaskName = "jiagu$base"
 
-        project.task(jiaguTaskName, type: JiaguTask, dependsOn: releaseTask, group: 'deploy', description: "jiagu and rename to $releaseExtension.outputPath") {
-//            doLast {
-//
-//                L.e jiaguTaskName
-//
-//            }
+        project.task(jiaguTaskName, type: JiaguTask, dependsOn: releaseTask, group: 'jiagu', description: "jiagu and rename to $releaseExtension.outputPath") {
+            jiaguProgram = JIAGU_360
+            jiaguProgramDir = new File(localPropertiesMap.get("jiaguPath"))
+            apkFile = new File("")
+            outputDir = new File("")
         }
 
     }
