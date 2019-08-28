@@ -90,6 +90,9 @@ outputApk {
 
     // 加固输出文件夹
     jiaguOutputPath = './output222/jiagu/'
+
+    // 完后后打开文件夹
+    openDir = true
 }
 
 dependencies {

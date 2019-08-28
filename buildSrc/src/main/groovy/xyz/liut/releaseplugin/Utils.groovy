@@ -1,7 +1,5 @@
 package xyz.liut.releaseplugin
 
-import java.lang.reflect.Field
-
 /**
  * 执行命令并返回执行结果是否成功
  *
@@ -10,7 +8,7 @@ import java.lang.reflect.Field
  */
 static boolean execCommand(String cmd) {
     println()
-    println "执行Command: $cmd"
+    println "执行Command:\n$cmd"
     def result = true
     def proc = cmd.execute()
     proc.inputStream.eachLine {
@@ -24,7 +22,7 @@ static boolean execCommand(String cmd) {
     println "执行结果: $result"
 
     if (!result) {
-        throw new Exception("命令执行失败 $cmd")
+        throw new RuntimeException("命令执行失败\n$cmd")
     }
 
     println()
@@ -62,7 +60,7 @@ static String uname() {
  *
  * @param dirPath 待检查的文件夹
  */
-static void checkAndDir(String dirPath) {
+static void checkDir(String dirPath) {
     File file = new File(dirPath)
     if (!file.exists()) {
         boolean res = file.mkdirs()
@@ -75,51 +73,17 @@ static void checkAndDir(String dirPath) {
 
 }
 
-// ===============
-
-
-static void printlnObject(Object object) {
-    if (null == object) {
-        println("obj", "null")
-        return
+/**
+ * 打开文件夹/文件
+ *
+ * @param path 文件夹路径
+ */
+static void openPath(String path) {
+    String uname = uname()
+    switch (uname) {
+        case "Darwin":  // mac
+            execCommand("open $path")
+            break
     }
 
-    Class cls = object.getClass()
-
-    printlnObject(cls, object)
-
 }
-
-static void printlnObject(Class cls, Object object) {
-    if (null == cls) {
-        println("cls", "null")
-        return
-    }
-
-    System.out.println("------------------------------")
-
-    println("Class", cls.getName())
-
-    Field[] fields = cls.getDeclaredFields()
-    if (fields != null) {
-        for (Field f : fields) {
-            f.setAccessible(true)
-            try {
-                println(f.getName(), f.get(object))
-            } catch (Exception e) {
-                e.printStackTrace()
-            }
-        }
-
-    }
-
-    System.out.println("------------------------------")
-
-}
-
-
-private static void println(String tag, Object obj) {
-    System.out.println(tag + ": " + obj)
-}
-
-

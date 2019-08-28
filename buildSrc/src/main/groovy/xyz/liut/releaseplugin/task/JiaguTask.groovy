@@ -1,12 +1,12 @@
 package xyz.liut.releaseplugin.task
 
-import org.gradle.api.DefaultTask
+
 import org.gradle.api.tasks.TaskAction
 import xyz.liut.releaseplugin.Utils
 
 import java.util.function.Consumer
 
-class JiaguTask extends DefaultTask {
+class JiaguTask extends BaseTask {
 
     /**
      * 360 加固
@@ -31,7 +31,7 @@ class JiaguTask extends DefaultTask {
     /**
      * 输出路径
      */
-    File outputDir
+    String outputDir
 
     @TaskAction
     def jiagu() {
@@ -45,18 +45,16 @@ class JiaguTask extends DefaultTask {
             throw new IllegalArgumentException("outputDir 为空")
         }
 
-        println "=====开始加固====="
+        Utils.checkDir(outputDir)
 
-        if (!outputDir.exists()) {
-            outputDir.mkdirs()
-        }
+        println "=====开始加固====="
 
         switch (jiaguProgram) {
             case JIAGU_360:
                 apkFiles.forEach(new Consumer<File>() {
                     @Override
                     void accept(File file) {
-                        jiagu360(file, outputDir)
+                        jiagu360(file, new File(outputDir))
                     }
                 })
                 break
@@ -64,6 +62,8 @@ class JiaguTask extends DefaultTask {
                 throw new IllegalArgumentException("目前仅支持 360")
                 break
         }
+
+        success = true
 
         println "=====加固完成====="
 
@@ -76,7 +76,8 @@ class JiaguTask extends DefaultTask {
     private def jiagu360(File inputFileName, File outputFileDir) {
         println "360jiagu: \ninputFileName=$inputFileName \noutputFileDir=$outputFileDir"
 
-        Utils.execCommand(" java -jar  $jiaguProgramDir  -jiagu  ${inputFileName.absolutePath} ${outputFileDir.absolutePath} -autosign -automulpkg")
+        String cmd = "java -jar $jiaguProgramDir -jiagu ${inputFileName.absolutePath} ${outputFileDir.absolutePath} -autosign -automulpkg"
+        Utils.execCommand(cmd)
     }
 
 }

@@ -32,6 +32,9 @@ class ReleasePlugin implements Plugin<Project> {
 
     private Map<String, String> localPropertiesMap
 
+    // 是否是加固任务
+    private boolean isJiaguTask
+
     @Override
     void apply(Project project) {
         // log
@@ -46,6 +49,8 @@ class ReleasePlugin implements Plugin<Project> {
         if (!app) {
             throw new IllegalStateException("本插件仅支持 Android 项目")
         }
+
+        isJiaguTask = false
 
         this.project = project
         this.rootProject = project.rootProject
@@ -96,7 +101,7 @@ class ReleasePlugin implements Plugin<Project> {
 
         def outputDir = project.rootDir.toString() + File.separator + releaseExtension.outputPath
 
-        Utils.checkAndDir(outputDir)
+        Utils.checkDir(outputDir)
 
         releaseExtension.outputPath = outputDir
         L.d releaseExtension.outputPath
@@ -147,8 +152,10 @@ class ReleasePlugin implements Plugin<Project> {
 
         def base = "$flavorName$buildTypeName"
 
-        def taskName = "release$base"
         def dependsOn = "assemble$base"
+        def taskName = "release$base"
+
+        def jiaguTaskName = "jiagu$base"
 
         L.i "create task: $taskName"
 
@@ -163,15 +170,32 @@ class ReleasePlugin implements Plugin<Project> {
             fileNameTemplate = releaseExtension.fileNameTemplate
             outputDir = releaseExtension.outputPath
             outputFiles = new HashSet<>()
+
+            doLast {
+                if (!isJiaguTask && releaseExtension.openDir && success) {
+                    Utils.openPath(releaseExtension.outputPath)
+                }
+            }
+
         }
 
         // 生成加固 task
-        def jiaguTaskName = "jiagu$base"
         project.task(jiaguTaskName, type: JiaguTask, dependsOn: releaseTask, group: 'jiagu', description: "jiagu and rename to $releaseExtension.outputPath") {
             jiaguProgram = JIAGU_360
             jiaguProgramDir = localPropertiesMap.get("jiaguPath")
             apkFiles = releaseTask.outputFiles
-            outputDir = new File(releaseExtension.jiaguOutputPath)
+            outputDir = releaseExtension.jiaguOutputPath
+
+            doFirst {
+                isJiaguTask = true
+            }
+
+            doLast {
+                if (releaseExtension.openDir && success) {
+                    Utils.openPath(releaseExtension.jiaguOutputPath)
+                }
+            }
+
         }
 
     }

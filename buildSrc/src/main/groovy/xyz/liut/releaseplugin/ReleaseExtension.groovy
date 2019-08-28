@@ -23,6 +23,11 @@ class ReleaseExtension {
      */
     private String jiaguOutputPath = DEFAULT_JIAGU_OUTPUT_DIR
 
+    /**
+     * 操作完成后， 打开输出目录
+     */
+    private boolean openDir = false
+
     String getFileNameTemplate() {
         return fileNameTemplate
     }
@@ -46,5 +51,14 @@ class ReleaseExtension {
     void setJiaguOutputPath(String jiaguOutputPath) {
         this.jiaguOutputPath = jiaguOutputPath
     }
+
+    boolean getOpenDir() {
+        return openDir
+    }
+
+    void setOpenDir(boolean openDir) {
+        this.openDir = openDir
+    }
+
 
 }

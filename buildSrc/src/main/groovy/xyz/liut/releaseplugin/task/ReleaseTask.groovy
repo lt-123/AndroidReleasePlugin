@@ -12,7 +12,7 @@ import java.util.function.Consumer
 /**
  * release task
  */
-class ReleaseTask extends DefaultTask {
+class ReleaseTask extends BaseTask {
 
     /**
      * 待处理的数据
@@ -89,6 +89,8 @@ class ReleaseTask extends DefaultTask {
                 outputFiles.add(resultFile)
             }
         })
+
+        success = true
 
         L.i "-------${name} end, ${outputFiles.size()}---------"
     }
