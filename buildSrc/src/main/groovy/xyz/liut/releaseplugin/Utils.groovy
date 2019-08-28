@@ -37,12 +37,12 @@ static def execCommand(String cmd) {
 }
 
 /**
- * 执行命令并返回 exitValue
+ * 执行 windows powershell 命令并返回 exitValue
  *
  * @param cmd 命令体
  * @return exitValue
  */
-static def execWindowsCmdCommand(String cmd) {
+static def execWindowsPsCommand(String cmd) {
     println()
     println "执行Command:\n$cmd"
 
@@ -50,7 +50,7 @@ static def execWindowsCmdCommand(String cmd) {
 
     try {
         String[] cmds = new String[3]
-        cmds[0] = "cmd"
+        cmds[0] = "powershell"
         cmds[1] = "/c"
         cmds[2] = cmd
         def proc = Runtime.getRuntime().exec(cmds)
@@ -141,13 +141,14 @@ static void openPath(String path) {
         }
         // win
         else if (uname.toUpperCase().contains("MINGW")) {
-            execWindowsCmdCommand("explorer $path")
+            execWindowsPsCommand("explorer $path")
         }
         // linux 系统的文件管理器不统一， 判断起来很麻烦， 暂不处理
         else {
             printlnError "当前系统未适配打开文件夹功能"
         }
-    } catch (Exception ignored) {
+    } catch (Exception e) {
+        e.printStackTrace()
     }
 
 }
