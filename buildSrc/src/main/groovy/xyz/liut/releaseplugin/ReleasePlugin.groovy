@@ -35,7 +35,10 @@ class ReleasePlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         // log
-        Logcat.handlers.add(new StdHandler(false, false))
+        if (Logcat.handlers.size() == 0) {
+            // 避免 deamon 重复添加
+            Logcat.handlers.add(new StdHandler(false, false))
+        }
         L.i "=====${project.rootProject.name}====="
 
         // 判断是否是 Android 项目
@@ -166,7 +169,7 @@ class ReleasePlugin implements Plugin<Project> {
         def jiaguTaskName = "jiagu$base"
         project.task(jiaguTaskName, type: JiaguTask, dependsOn: releaseTask, group: 'jiagu', description: "jiagu and rename to $releaseExtension.outputPath") {
             jiaguProgram = JIAGU_360
-            jiaguProgramDir = new File(localPropertiesMap.get("jiaguPath"))
+            jiaguProgramDir = localPropertiesMap.get("jiaguPath")
             apkFiles = releaseTask.outputFiles
             outputDir = new File(releaseExtension.jiaguOutputPath)
         }

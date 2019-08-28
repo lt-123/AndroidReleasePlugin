@@ -21,7 +21,7 @@ class JiaguTask extends DefaultTask {
     /**
      * 加固程序路径
      */
-    File jiaguProgramDir
+    String jiaguProgramDir
 
     /**
      * 待加固的 apk
@@ -36,7 +36,7 @@ class JiaguTask extends DefaultTask {
     @TaskAction
     def jiagu() {
         if (!jiaguProgramDir) {
-            throw new IllegalArgumentException("jiaguProgramDir 为空")
+            throw new IllegalArgumentException("jiaguPath 为空, 请在项目根目录的 local.properties 中配置 jiaguPath")
         }
         if (!apkFiles) {
             throw new IllegalArgumentException("apkFiles 为空")
