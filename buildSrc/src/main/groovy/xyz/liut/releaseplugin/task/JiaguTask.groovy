@@ -1,10 +1,10 @@
 package xyz.liut.releaseplugin.task
 
 import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import xyz.liut.releaseplugin.Utils
+
+import java.util.function.Consumer
 
 class JiaguTask extends DefaultTask {
 
@@ -16,29 +16,35 @@ class JiaguTask extends DefaultTask {
     /**
      * 使用的加固程序， 目前仅支持 360
      */
-    @Input
     int jiaguProgram = JIAGU_360
 
     /**
      * 加固程序路径
      */
-    @Input
     File jiaguProgramDir
 
     /**
      * 待加固的 apk
      */
-    @Input
-    File apkFile
+    Set<File> apkFiles
 
     /**
      * 输出路径
      */
-    @OutputDirectory
     File outputDir
 
     @TaskAction
     def jiagu() {
+        if (!jiaguProgramDir) {
+            throw new IllegalArgumentException("jiaguProgramDir 为空")
+        }
+        if (!apkFiles) {
+            throw new IllegalArgumentException("apkFiles 为空")
+        }
+        if (!outputDir) {
+            throw new IllegalArgumentException("outputDir 为空")
+        }
+
         println "=====开始加固====="
 
         if (!outputDir.exists()) {
@@ -47,7 +53,12 @@ class JiaguTask extends DefaultTask {
 
         switch (jiaguProgram) {
             case JIAGU_360:
-                jiagu360(apkFile, outputDir)
+                apkFiles.forEach(new Consumer<File>() {
+                    @Override
+                    void accept(File file) {
+                        jiagu360(file, outputDir)
+                    }
+                })
                 break
             default:
                 throw new IllegalArgumentException("目前仅支持 360")

@@ -13,15 +13,24 @@ android {
 //        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-//    sig liut liut1123
+    signingConfigs {
+        appSign {
+            keyAlias 'liut'
+            keyPassword 'liut1123'
+            storeFile file('./appSign.jks')
+            storePassword 'liut1123'
+        }
+    }
 
 
     buildTypes {
         debug {
+            signingConfig signingConfigs.appSign
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         release {
+            signingConfig signingConfigs.appSign
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -73,9 +82,14 @@ android {
 }
 
 outputApk {
-    fileName = '$app-$b-$f-$vn.$vc'
+    // 文件名模板
+    fileNameTemplate = '$app-$b-$f-$vn.$vc'
 
+    // 输出文件夹
     outputPath = './output222/'
+
+    // 加固输出文件夹
+    jiaguOutputPath = './output222/jiagu/'
 }
 
 dependencies {

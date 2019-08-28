@@ -11,7 +11,7 @@ plugins {
 ext{
     pluginId = 'xyz.liut.release'
     pluginImplementationClass = 'xyz.liut.releaseplugin.ReleasePlugin'
-    pluginVersion = '0.0.8'
+    pluginVersion = '0.0.11'
     pluginGroup = "xyz.liut.gradleplugin"
 }
 
