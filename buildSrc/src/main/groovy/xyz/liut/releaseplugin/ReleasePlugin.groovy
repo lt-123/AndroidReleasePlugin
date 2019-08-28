@@ -80,7 +80,7 @@ class ReleasePlugin implements Plugin<Project> {
     def initLocalProperties() {
         localPropertiesMap = new HashMap<>()
 
-        String localProperties = rootProject.projectDir.toString() + "/local.properties"
+        String localProperties = rootProject.projectDir.toString() + File.separator + "local.properties"
         Properties properties = new Properties()
         properties.load(new FileInputStream(new File(localProperties)))
         properties.forEach(new BiConsumer<String, String>() {

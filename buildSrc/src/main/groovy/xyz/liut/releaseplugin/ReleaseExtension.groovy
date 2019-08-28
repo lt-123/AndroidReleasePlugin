@@ -3,8 +3,8 @@ package xyz.liut.releaseplugin
 class ReleaseExtension {
 
     private static String DEFAULT_FILE_NAME_FORMAT = '$app-$b-$f_$vn.$vc'
-    private static String DEFAULT_OUTPUT_DIR = './output/'
-    private static String DEFAULT_JIAGU_OUTPUT_DIR = './output/jiagu/'
+    private static String DEFAULT_OUTPUT_DIR = ".${File.separator}output${File.separator}"
+    private static String DEFAULT_JIAGU_OUTPUT_DIR = ".${File.separator}output${File.separator}jiagu${File.separator}"
 
     /**
      * 文件名模板
