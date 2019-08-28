@@ -130,21 +130,24 @@ static void checkDir(String dirPath) {
 static void openPath(String path) {
     String uname = uname()
 
-    path = new File(path).getAbsoluteFile().toString()
+    path = new File(path).toString()
 
     println "openPath uname = $uname\npath = $path"
 
-    // mac
-    if (uname == "Darwin") {
-        execCommand("open $path")
-    }
-    // win
-    else if (uname.toUpperCase().contains("MINGW")) {
-        execWindowsCmdCommand("explorer $path")
-    }
-    // linux 系统的文件管理器不统一， 判断起来很麻烦， 暂不处理
-    else {
-        printlnError "当前系统未适配打开文件夹功能"
+    try {
+        // mac
+        if (uname == "Darwin") {
+            execCommand("open $path")
+        }
+        // win
+        else if (uname.toUpperCase().contains("MINGW")) {
+            execWindowsCmdCommand("explorer $path")
+        }
+        // linux 系统的文件管理器不统一， 判断起来很麻烦， 暂不处理
+        else {
+            printlnError "当前系统未适配打开文件夹功能"
+        }
+    } catch (Exception ignored) {
     }
 
 }
