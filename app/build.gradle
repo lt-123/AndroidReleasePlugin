@@ -82,7 +82,15 @@ android {
 }
 
 outputApk {
-    // 文件名模板
+    /*
+    输出文件名称模板, 如下
+
+    $app: module 名称
+    $b: buildType 名称
+    $f: productFlavor 名称
+    $vn: versionName
+    $vc: versionCode
+     */
     fileNameTemplate = '$app-$b-$f-$vn.$vc'
 
     // 输出文件夹

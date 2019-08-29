@@ -8,10 +8,10 @@ plugins {
 }
 
 // 插件配置
-ext{
+ext {
     pluginId = 'xyz.liut.release'
     pluginImplementationClass = 'xyz.liut.releaseplugin.ReleasePlugin'
-    pluginVersion = '0.2.1'
+    pluginVersion = '0.2.6'
     pluginGroup = "xyz.liut.gradleplugin"
 }
 
@@ -31,9 +31,11 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
 
-    compile gradleApi()
-    compile localGroovy()
+//    compile gradleApi()
+//    compile localGroovy()
+
     // android plugin
+    //noinspection GradleDependency
     compile 'com.android.tools.build:gradle:3.4.2'
     compile 'xyz.liut.logcat:logcat:0.1.4'
 }
@@ -65,7 +67,7 @@ gradlePlugin {
 // The configuration example below shows the minimum required properties
 // configured to publish your plugin to the plugin portal
 pluginBundle {
-    website = 'http://www.liut.xyz/'
+    website = 'https://github.com/lt-123/AndroidReleasePlugin'
     vcsUrl = 'https://github.com/lt-123/AndroidReleasePlugin'
     description = '一个 Android 打包相关的插件'
     tags = ['android', 'release']
