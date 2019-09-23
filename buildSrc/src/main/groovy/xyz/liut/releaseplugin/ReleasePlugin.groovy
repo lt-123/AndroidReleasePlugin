@@ -251,7 +251,15 @@ class ReleasePlugin implements Plugin<Project> {
 
         // 所有变种
         Set<ApplicationVariant> variants = android.applicationVariants.findAll { applicationVariant ->
-            return buildTypeName == "" || flavorName == "" || (buildTypeName.equalsIgnoreCase(applicationVariant.buildType.name) && flavorName.equalsIgnoreCase(applicationVariant.flavorName))
+            if (buildTypeName == "" && flavorName == "") {
+                return true
+            } else if (buildTypeName == "" && flavorName != "") {
+                return flavorName.equalsIgnoreCase(applicationVariant.flavorName)
+            } else if (buildTypeName != "" && flavorName == "") {
+                return buildTypeName.equalsIgnoreCase(applicationVariant.buildType.name)
+            } else {
+                return (buildTypeName.equalsIgnoreCase(applicationVariant.buildType.name) && flavorName.equalsIgnoreCase(applicationVariant.flavorName))
+            }
         }
 
         // 生成 release task
