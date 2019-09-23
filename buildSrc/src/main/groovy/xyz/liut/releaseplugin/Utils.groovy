@@ -128,27 +128,27 @@ static void checkDir(String dirPath) {
  * @param path 文件/文件夹路径
  */
 static void openPath(String path) {
-    String uname = uname()
+    String osName = System.properties.get("os.name")
+    if (!osName) {
+        printlnError "未知操作系统"
+    }
 
-    path = new File(path).toString()
-
-    println "openPath uname = $uname\npath = $path"
+    osName = osName.toLowerCase()
 
     try {
         // mac
-        if (uname == "Darwin") {
+        if (osName.contains("mac")) {
             execCommand("open $path")
         }
         // win
-        else if (uname.toUpperCase().contains("MINGW")) {
+        else if (osName.contains("windows")) {
             execWindowsPsCommand("explorer $path")
         }
         // linux 系统的文件管理器不统一， 判断起来很麻烦， 暂不处理
         else {
-            printlnError "当前系统未适配打开文件夹功能"
+            printlnError "当前系统未适配打开文件夹功能 $osName"
         }
-    } catch (Exception e) {
-        e.printStackTrace()
+    } catch (Exception ignored) {
     }
 
 }
