@@ -71,7 +71,7 @@ outputApk {
     println "------------$isJenkins-------------"
 
     // Jenkins 环境
-    if (isJenkins) {
+    if (isJenkins == "true") {
         // 输出文件夹
         outputPath = '/Users/liut/workspace'
 

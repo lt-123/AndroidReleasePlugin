@@ -87,6 +87,8 @@ class ReleaseTask extends BaseTask {
                         resultFile.toPath(),
                         StandardCopyOption.REPLACE_EXISTING)
 
+                L.d "resultFile $resultFile"
+
                 templateBean.outputFile = resultFile
                 outputFiles.add(templateBean)
             }
