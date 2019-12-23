@@ -3,7 +3,7 @@ apply plugin: 'xyz.liut.release'
 
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.0"
+    buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "xyz.liut.androidreleaseplugin"
         minSdkVersion 21
@@ -64,6 +64,7 @@ outputApk {
     $vc: versionCode
      */
     fileNameTemplate = '$app-$b-$f-$vn.$vc'
+    jiaguFileNameTemplate = '$app-$b-$f-$vn'
 
     def isJenkins = System.getenv("IS_JENKINS")
 
@@ -71,12 +72,6 @@ outputApk {
 
     // Jenkins 环境
     if (isJenkins) {
-//        // 输出文件夹
-//        outputPath = '/usr/local/var/www/KindleLaw企业版'
-//
-//        // 加固输出文件夹
-//        jiaguOutputPath = '/usr/local/var/www/KindleLaw企业版'
-
         // 输出文件夹
         outputPath = '/Users/liut/workspace'
 

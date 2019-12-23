@@ -14,6 +14,11 @@ class ReleaseExtension {
     private String fileNameTemplate = DEFAULT_FILE_NAME_FORMAT
 
     /**
+     * 加固文件名
+     */
+    private String jiaguFileNameTemplate
+
+    /**
      * 输出路径
      */
     private String outputPath = DEFAULT_OUTPUT_DIR
@@ -34,6 +39,14 @@ class ReleaseExtension {
 
     void setFileNameTemplate(String fileNameTemplate) {
         this.fileNameTemplate = fileNameTemplate
+    }
+
+    String getJiaguFileNameTemplate() {
+        return jiaguFileNameTemplate
+    }
+
+    void setJiaguFileNameTemplate(String jiaguFileNameTemplate) {
+        this.jiaguFileNameTemplate = jiaguFileNameTemplate
     }
 
     String getOutputPath() {

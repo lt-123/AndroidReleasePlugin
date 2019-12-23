@@ -4,6 +4,7 @@ import com.android.build.gradle.api.ApplicationVariant
 import org.gradle.api.tasks.TaskAction
 import xyz.liut.logcat.L
 import xyz.liut.releaseplugin.Utils
+import xyz.liut.releaseplugin.bean.FileNameTemplateBean
 
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
@@ -32,7 +33,7 @@ class ReleaseTask extends BaseTask {
     /**
      * 所有输出的文件
      */
-    Set<File> outputFiles
+    Set<FileNameTemplateBean> outputFiles
 
     @TaskAction
     def release() {
@@ -66,14 +67,10 @@ class ReleaseTask extends BaseTask {
                 }
                 L.d outputFile
 
+                FileNameTemplateBean templateBean = new FileNameTemplateBean(project, applicationVariant)
 
                 // 根据模板生成文件名
-                String finalFileName = fileNameTemplate
-                        .replace('$app', project.name)
-                        .replace('$b', applicationVariant.buildType.name)
-                        .replace('$f', applicationVariant.flavorName)
-                        .replace('$vn', applicationVariant.versionName)
-                        .replace('$vc', applicationVariant.versionCode.toString())
+                String finalFileName = templateBean.fileNameTemplate(fileNameTemplate)
 
                 // 判断是否已签名
                 if (applicationVariant.signingReady) {
@@ -90,7 +87,8 @@ class ReleaseTask extends BaseTask {
                         resultFile.toPath(),
                         StandardCopyOption.REPLACE_EXISTING)
 
-                outputFiles.add(resultFile)
+                templateBean.outputFile = resultFile
+                outputFiles.add(templateBean)
             }
         })
 

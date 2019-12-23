@@ -279,6 +279,7 @@ class ReleasePlugin implements Plugin<Project> {
             jiaguProgram = JIAGU_360
             jiaguProgramDir = localPropertiesMap.get("jiaguPath")
             apkFiles = releaseTask.outputFiles
+            fileNameTemplate = releaseExtension.jiaguFileNameTemplate
             outputDir = releaseExtension.jiaguOutputPath
 
             doLast {

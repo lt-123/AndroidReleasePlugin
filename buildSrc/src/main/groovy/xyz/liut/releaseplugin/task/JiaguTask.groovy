@@ -3,6 +3,7 @@ package xyz.liut.releaseplugin.task
 
 import org.gradle.api.tasks.TaskAction
 import xyz.liut.releaseplugin.Utils
+import xyz.liut.releaseplugin.bean.FileNameTemplateBean
 
 import java.util.function.Consumer
 
@@ -26,7 +27,12 @@ class JiaguTask extends BaseTask {
     /**
      * 待加固的 apk
      */
-    Set<File> apkFiles
+    Set<FileNameTemplateBean> apkFiles
+
+    /**
+     * 文件名模板
+     */
+    String fileNameTemplate
 
     /**
      * 输出路径
@@ -51,10 +57,25 @@ class JiaguTask extends BaseTask {
 
         switch (jiaguProgram) {
             case JIAGU_360:
-                apkFiles.forEach(new Consumer<File>() {
+                apkFiles.forEach(new Consumer<FileNameTemplateBean>() {
                     @Override
-                    void accept(File file) {
-                        jiagu360(file, new File(outputDir))
+                    void accept(FileNameTemplateBean bean) {
+                        // 判断是否存在模板
+                        if (fileNameTemplate) {
+                            // 根据模板生成文件名
+                            String finalFileName = bean.fileNameTemplate(fileNameTemplate)
+                            // 使用 tmp 文件加固， 加固产生的文件会跟 tmp 文件名一致
+                            File tmp = new File(outputDir, "${finalFileName}.apk")
+                            if (tmp.exists()) tmp.delete()
+                            bean.outputFile.renameTo(tmp)
+                            // 加固 tmp
+                            jiagu360(tmp, new File(outputDir))
+
+                            // 删除 tmp
+                            if (tmp.exists()) tmp.delete()
+                        } else {
+                            jiagu360(bean.outputFile, new File(outputDir))
+                        }
                     }
                 })
                 break
