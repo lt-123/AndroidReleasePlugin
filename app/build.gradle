@@ -65,14 +65,38 @@ outputApk {
      */
     fileNameTemplate = '$app-$b-$f-$vn.$vc'
 
-    // 输出文件夹
-    outputPath = './output/'
+    def isJenkins = System.getenv("IS_JENKINS")
 
-    // 加固输出文件夹
-    jiaguOutputPath = './output/jiagu/'
+    println "------------$isJenkins-------------"
 
-    // 完后后打开文件夹
-    openDir = true
+    // Jenkins 环境
+    if (isJenkins) {
+//        // 输出文件夹
+//        outputPath = '/usr/local/var/www/KindleLaw企业版'
+//
+//        // 加固输出文件夹
+//        jiaguOutputPath = '/usr/local/var/www/KindleLaw企业版'
+
+        // 输出文件夹
+        outputPath = '/Users/liut/workspace'
+
+        // 加固输出文件夹
+        jiaguOutputPath = '/Users/liut/workspace'
+
+        // 完后后不打开文件夹
+        openDir = false
+    } else {
+        // 输出文件夹
+        outputPath = './output/'
+
+        // 加固输出文件夹
+        jiaguOutputPath = './output/'
+
+        // 完后后打开文件夹
+        openDir = true
+    }
+
+
 }
 
 dependencies {

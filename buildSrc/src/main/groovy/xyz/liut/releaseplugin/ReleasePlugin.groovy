@@ -115,12 +115,11 @@ class ReleasePlugin implements Plugin<Project> {
     def initExtension() {
         L.i "createExtension"
 
-        def outputDir = project.rootDir.toString() + File.separator + releaseExtension.outputPath
+        Utils.checkDir(releaseExtension.outputPath)
+        Utils.checkDir(releaseExtension.jiaguOutputPath)
 
-        Utils.checkDir(outputDir)
-
-        releaseExtension.outputPath = outputDir
-        L.d releaseExtension.outputPath
+        L.d "outputPath $releaseExtension.outputPath"
+        L.d "jiaguOutputPath $releaseExtension.jiaguOutputPath"
     }
 
     /**
@@ -242,12 +241,12 @@ class ReleasePlugin implements Plugin<Project> {
 
         def base = "$flavorName$buildTypeName"
 
-        def dependsOn = "assemble$base"
-        def taskName = "release$base"
+        def releaseDependsOn = "assemble$base"
+        def releaseName = "release$base"
 
         def jiaguTaskName = "jiagu$base"
 
-        L.i "create task: $taskName"
+        L.i "create task: ${releaseName}、 ${jiaguTaskName}"
 
         // 所有变种
         Set<ApplicationVariant> variants = android.applicationVariants.findAll { applicationVariant ->
@@ -263,7 +262,7 @@ class ReleasePlugin implements Plugin<Project> {
         }
 
         // 生成 release task
-        def releaseTask = project.task(taskName, type: ReleaseTask, dependsOn: dependsOn, group: 'deploy', description: "assemble and rename to $releaseExtension.outputPath") {
+        def releaseTask = project.task(releaseName, type: ReleaseTask, dependsOn: releaseDependsOn, group: 'deploy', description: "assemble and rename to $releaseExtension.outputPath") {
             inputVariants = variants
             fileNameTemplate = releaseExtension.fileNameTemplate
             outputDir = releaseExtension.outputPath

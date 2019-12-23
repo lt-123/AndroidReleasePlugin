@@ -11,7 +11,7 @@ plugins {
 ext {
     pluginId = 'xyz.liut.release'
     pluginImplementationClass = 'xyz.liut.releaseplugin.ReleasePlugin'
-    pluginVersion = '0.2.8'
+    pluginVersion = '0.2.10'
     pluginGroup = "xyz.liut.gradleplugin"
 }
 
@@ -37,7 +37,7 @@ dependencies {
     // android plugin
     //noinspection GradleDependency
     compile 'com.android.tools.build:gradle:3.4.2'
-    compile 'xyz.liut.logcat:logcat:0.1.4'
+    compile 'xyz.liut.logcat:logcat:0.1.6'
 }
 
 // 发布到本地

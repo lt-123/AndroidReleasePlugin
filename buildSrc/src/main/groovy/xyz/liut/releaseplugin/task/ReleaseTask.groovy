@@ -1,9 +1,9 @@
 package xyz.liut.releaseplugin.task
 
 import com.android.build.gradle.api.ApplicationVariant
-import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import xyz.liut.logcat.L
+import xyz.liut.releaseplugin.Utils
 
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
@@ -46,6 +46,8 @@ class ReleaseTask extends BaseTask {
             throw new IllegalArgumentException("outputDir 为空")
         }
 
+        Utils.checkDir(outputDir)
+
         inputVariants.forEach(new Consumer<ApplicationVariant>() {
             @Override
             void accept(ApplicationVariant applicationVariant) {
@@ -80,7 +82,9 @@ class ReleaseTask extends BaseTask {
                     finalFileName = finalFileName + "-unsigned.apk"
                 }
 
-                File resultFile = new File(outputDir + File.separator + finalFileName).absoluteFile
+                File resultFile = new File(outputDir + File.separator + finalFileName)
+
+                if (resultFile.exists()) resultFile.delete()
 
                 Files.copy(outputFile.toPath(),
                         resultFile.toPath(),
