@@ -277,6 +277,7 @@ class ReleasePlugin implements Plugin<Project> {
         // 生成加固 task
         project.task(jiaguTaskName, type: JiaguTask, dependsOn: releaseTask, group: 'jiagu', description: "jiagu and rename to $releaseExtension.outputPath") {
             jiaguProgram = JIAGU_360
+            jiaguCmdParams = releaseExtension.jiaguCmdParams
             jiaguProgramDir = localPropertiesMap.get("jiaguPath")
             apkFiles = releaseTask.outputFiles
             fileNameTemplate = releaseExtension.jiaguFileNameTemplate

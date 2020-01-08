@@ -1,6 +1,5 @@
 package xyz.liut.releaseplugin.task
 
-
 import org.gradle.api.tasks.TaskAction
 import xyz.liut.releaseplugin.Utils
 import xyz.liut.releaseplugin.bean.FileNameTemplateBean
@@ -23,6 +22,11 @@ class JiaguTask extends BaseTask {
      * 加固程序路径
      */
     String jiaguProgramDir
+
+    /**
+     * 360 加固参数
+     */
+    String jiaguCmdParams
 
     /**
      * 待加固的 apk
@@ -97,7 +101,7 @@ class JiaguTask extends BaseTask {
     private def jiagu360(File inputFileName, File outputFileDir) {
         println "360jiagu: \ninputFileName=$inputFileName \noutputFileDir=$outputFileDir"
 
-        String cmd = "java -jar $jiaguProgramDir -jiagu ${inputFileName.absolutePath} ${outputFileDir.absolutePath} -autosign -automulpkg"
+        String cmd = "java -jar $jiaguProgramDir -jiagu ${inputFileName.absolutePath} ${outputFileDir.absolutePath} ${jiaguCmdParams}"
         Utils.execCommand(cmd)
     }
 

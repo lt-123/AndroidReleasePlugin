@@ -68,6 +68,8 @@ outputApk {
 
     def isJenkins = System.getenv("IS_JENKINS")
 
+    jiaguCmdParams = "-autosign -automulpkg tttt"
+
     println "------------$isJenkins-------------"
 
     // Jenkins 环境
@@ -101,3 +103,16 @@ dependencies {
 //    androidTestImplementation 'androidx.test:runner:1.2.0'
 //    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
+
+
+gradle.projectsEvaluated {
+    println "=========projectsEvaluated======test2=="
+
+    releaseDebug.doFirst {
+        println "是的伙计"
+    }
+    releaseDebug.doFirst {
+        print "塔丁狗， "
+    }
+}
+
