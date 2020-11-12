@@ -1,6 +1,9 @@
 package xyz.liut.releaseplugin.task
 
 import com.android.build.gradle.api.ApplicationVariant
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.OutputFiles
 import org.gradle.api.tasks.TaskAction
 import xyz.liut.logcat.L
 import xyz.liut.releaseplugin.Utils
@@ -18,21 +21,25 @@ class ReleaseTask extends BaseTask {
     /**
      * 待处理的数据
      */
+    @Input
     Set<ApplicationVariant> inputVariants
 
     /**
      * 文件名模板
      */
+    @Input
     String fileNameTemplate
 
     /**
      * 输出路径
      */
+    @OutputDirectory
     String outputDir
 
     /**
      * 所有输出的文件
      */
+    @OutputFiles
     Set<FileNameTemplateBean> outputFiles
 
     @TaskAction

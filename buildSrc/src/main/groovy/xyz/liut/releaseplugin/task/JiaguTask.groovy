@@ -1,5 +1,7 @@
 package xyz.liut.releaseplugin.task
 
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import xyz.liut.releaseplugin.Utils
 import xyz.liut.releaseplugin.bean.FileNameTemplateBean
@@ -16,31 +18,37 @@ class JiaguTask extends BaseTask {
     /**
      * 使用的加固程序， 目前仅支持 360
      */
+    @Input
     int jiaguProgram = JIAGU_360
 
     /**
      * 加固程序路径
      */
+    @Input
     String jiaguProgramDir
 
     /**
      * 360 加固参数
      */
+    @Input
     String jiaguCmdParams
 
     /**
      * 待加固的 apk
      */
+    @Input
     Set<FileNameTemplateBean> apkFiles
 
     /**
      * 文件名模板
      */
+    @Input
     String fileNameTemplate
 
     /**
      * 输出路径
      */
+    @OutputDirectory
     String outputDir
 
     @TaskAction

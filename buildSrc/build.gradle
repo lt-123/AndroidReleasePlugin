@@ -3,7 +3,7 @@ plugins {
     // maven 使用 uploadArchives 发布到本地
     id "maven"
     // 发布到 gradle plugin 仓库的两个插件
-    id "com.gradle.plugin-publish" version "0.10.1"
+    id "com.gradle.plugin-publish" version "0.12.0"
     id "java-gradle-plugin"
 }
 
@@ -11,7 +11,7 @@ plugins {
 ext {
     pluginId = 'xyz.liut.release'
     pluginImplementationClass = 'xyz.liut.releaseplugin.ReleasePlugin'
-    pluginVersion = '0.2.17'
+    pluginVersion = '0.2.20'
     pluginGroup = "xyz.liut.gradleplugin"
 }
 
@@ -67,9 +67,9 @@ gradlePlugin {
 // The configuration example below shows the minimum required properties
 // configured to publish your plugin to the plugin portal
 pluginBundle {
-    website = 'https://github.com/lt-123/AndroidReleasePlugin'
+    website = 'https://www.liut.xyz'
     vcsUrl = 'https://github.com/lt-123/AndroidReleasePlugin'
-    description = '一个 Android 打包相关的插件'
+    description = 'a Android release plugin'
     tags = ['android', 'release']
 
     plugins {
