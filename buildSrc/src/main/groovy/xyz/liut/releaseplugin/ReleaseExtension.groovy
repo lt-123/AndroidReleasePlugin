@@ -17,7 +17,7 @@ class ReleaseExtension {
     /**
      * 加固文件名
      */
-    private String jiaguFileNameTemplate
+    private String jiaguFileNameTemplate = DEFAULT_FILE_NAME_FORMAT
 
     /**
      * 输出路径

@@ -5,13 +5,13 @@ import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.api.ApplicationVariant
 import com.android.build.gradle.internal.dsl.BuildType
 import com.android.build.gradle.internal.dsl.ProductFlavor
-import com.android.utils.StringHelper
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 import xyz.liut.logcat.L
 import xyz.liut.logcat.Logcat
 import xyz.liut.logcat.handler.StdHandler
+import xyz.liut.releaseplugin.bean.VariantDataBean
 import xyz.liut.releaseplugin.task.BaseTask
 import xyz.liut.releaseplugin.task.JiaguTask
 import xyz.liut.releaseplugin.task.ReleaseTask
@@ -231,11 +231,11 @@ class ReleasePlugin implements Plugin<Project> {
      */
     def createTask(String buildTypeName, String flavorName) {
         if (buildTypeName != null)
-            buildTypeName = StringHelper.capitalize(buildTypeName)
+            buildTypeName = buildTypeName.capitalize()
         else
             buildTypeName = ""
         if (flavorName != null)
-            flavorName = StringHelper.capitalize(flavorName)
+            flavorName = flavorName.capitalize()
         else
             flavorName = ""
 
@@ -248,25 +248,35 @@ class ReleasePlugin implements Plugin<Project> {
 
         L.i "create task: ${releaseName}、 ${jiaguTaskName}"
 
+        List<VariantDataBean> variantBeans = new ArrayList<>()
+
         // 所有变种
-        Set<ApplicationVariant> variants = android.applicationVariants.findAll { applicationVariant ->
-            if (buildTypeName == "" && flavorName == "") {
-                return true
-            } else if (buildTypeName == "" && flavorName != "") {
-                return flavorName.equalsIgnoreCase(applicationVariant.flavorName)
-            } else if (buildTypeName != "" && flavorName == "") {
-                return buildTypeName.equalsIgnoreCase(applicationVariant.buildType.name)
-            } else {
-                return (buildTypeName.equalsIgnoreCase(applicationVariant.buildType.name) && flavorName.equalsIgnoreCase(applicationVariant.flavorName))
-            }
-        }
+        android.applicationVariants
+                .findAll { applicationVariant ->    // 找到指定名称的变种
+                    if (buildTypeName == "" && flavorName == "") {
+                        return true
+                    } else if (buildTypeName == "" && flavorName != "") {
+                        return flavorName.equalsIgnoreCase(applicationVariant.flavorName)
+                    } else if (buildTypeName != "" && flavorName == "") {
+                        return buildTypeName.equalsIgnoreCase(applicationVariant.buildType.name)
+                    } else {
+                        return (buildTypeName.equalsIgnoreCase(applicationVariant.buildType.name) && flavorName.equalsIgnoreCase(applicationVariant.flavorName))
+                    }
+                }
+                .forEach(new Consumer<ApplicationVariant>() {   // 遍历，转换为 apkFile
+                    @Override
+                    void accept(ApplicationVariant variant) {
+                        variantBeans.add(VariantDataBean.newInstance(project, variant))
+                    }
+                })
+
 
         // 生成 release task
         def releaseTask = project.task(releaseName, type: ReleaseTask, dependsOn: releaseDependsOn, group: 'deploy', description: "assemble and rename to $releaseExtension.outputPath") {
-            inputVariants = variants
+            variantDataBeans = variantBeans
             fileNameTemplate = releaseExtension.fileNameTemplate
             outputDir = releaseExtension.outputPath
-            outputFiles = new HashSet<>()
+            outputFiles = new ArrayList<>()
 
             doLast {
                 isReleaseTaskSuccess = success
@@ -279,7 +289,7 @@ class ReleasePlugin implements Plugin<Project> {
             jiaguProgram = JIAGU_360
             jiaguCmdParams = releaseExtension.jiaguCmdParams
             jiaguProgramDir = localPropertiesMap.get("jiaguPath")
-            apkFiles = releaseTask.outputFiles
+            variantDataBeans = variantBeans
             fileNameTemplate = releaseExtension.jiaguFileNameTemplate
             outputDir = releaseExtension.jiaguOutputPath
 

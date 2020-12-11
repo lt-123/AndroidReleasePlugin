@@ -11,7 +11,7 @@ plugins {
 ext {
     pluginId = 'xyz.liut.release'
     pluginImplementationClass = 'xyz.liut.releaseplugin.ReleasePlugin'
-    pluginVersion = '0.2.20'
+    pluginVersion = '0.2.21'
     pluginGroup = "xyz.liut.gradleplugin"
 }
 
@@ -36,7 +36,7 @@ dependencies {
 
     // android plugin
     //noinspection GradleDependency
-    compile 'com.android.tools.build:gradle:3.4.2'
+    compile 'com.android.tools.build:gradle:4.1.1'
     compile 'xyz.liut.logcat:logcat:0.1.6'
 }
 

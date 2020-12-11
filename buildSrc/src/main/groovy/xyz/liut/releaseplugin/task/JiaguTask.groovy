@@ -4,7 +4,7 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import xyz.liut.releaseplugin.Utils
-import xyz.liut.releaseplugin.bean.FileNameTemplateBean
+import xyz.liut.releaseplugin.bean.VariantDataBean
 
 import java.util.function.Consumer
 
@@ -37,7 +37,7 @@ class JiaguTask extends BaseTask {
      * 待加固的 apk
      */
     @Input
-    Set<FileNameTemplateBean> apkFiles
+    List<VariantDataBean> variantDataBeans
 
     /**
      * 文件名模板
@@ -69,9 +69,9 @@ class JiaguTask extends BaseTask {
 
         switch (jiaguProgram) {
             case JIAGU_360:
-                apkFiles.forEach(new Consumer<FileNameTemplateBean>() {
+                apkFiles.forEach(new Consumer<VariantDataBean>() {
                     @Override
-                    void accept(FileNameTemplateBean bean) {
+                    void accept(VariantDataBean bean) {
                         // 判断是否存在模板
                         if (fileNameTemplate) {
                             // 根据模板生成文件名

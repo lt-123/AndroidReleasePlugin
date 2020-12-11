@@ -144,9 +144,19 @@ static void openPath(String path) {
         else if (osName.contains("windows")) {
             execWindowsPsCommand("explorer $path")
         }
-        // linux 系统的文件管理器不统一， 判断起来很麻烦， 暂不处理
+        // linux
+        else if (osName.contains("linux")) {
+            if (new File("/usr/bin/nautilus").exists()) {
+                execCommand("nautilus $path &")
+            }
+            // Other Desktop, 暂不处理
+            else {
+                printlnError "On linux, only support nautilus."
+            }
+        }
+        // Other System， 暂不处理
         else {
-            printlnError "当前系统未适配打开文件夹功能 $osName"
+            printlnError "The current system is not compatible with the open folder function: $osName"
         }
     } catch (Exception ignored) {
     }

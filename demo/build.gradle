@@ -36,6 +36,21 @@ android {
         }
     }
 
+    flavorDimensions "default"
+
+    productFlavors {
+        official {
+            dimension "default"
+            buildConfigField 'String', 'HOST', '"https://www.official.com"'
+        }
+
+        internal {
+            dimension "default"
+            buildConfigField 'String', 'HOST', '"https://dev.internal.com/"'
+        }
+    }
+
+
 }
 
 outputApk {
@@ -51,16 +66,33 @@ outputApk {
     fileNameTemplate = '$app-$b-$f-$vn.$vc'
     jiaguFileNameTemplate = '$app-$b-$f-$vn'
 
+    def isJenkins = System.getenv("IS_JENKINS")
+
     jiaguCmdParams = "-autosign -automulpkg tttt"
 
-    // 输出文件夹
-    outputPath = './output/'
+    println "------------$isJenkins-------------"
 
-    // 加固输出文件夹
-    jiaguOutputPath = './output/'
+    // Jenkins 环境
+    if (isJenkins == "true") {
+        // 输出文件夹
+        outputPath = '/Users/liut/workspace'
 
-    // 完后后打开文件夹
-    openDir = true
+        // 加固输出文件夹
+        jiaguOutputPath = '/Users/liut/workspace'
+
+        // 完后后不打开文件夹
+        openDir = false
+    } else {
+        // 输出文件夹
+        outputPath = './output/'
+
+        // 加固输出文件夹
+        jiaguOutputPath = './output/'
+
+        // 完后后打开文件夹
+        openDir = true
+    }
+
 
 }
 
