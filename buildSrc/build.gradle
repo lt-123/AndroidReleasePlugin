@@ -11,7 +11,7 @@ plugins {
 ext {
     pluginId = 'xyz.liut.release'
     pluginImplementationClass = 'xyz.liut.releaseplugin.ReleasePlugin'
-    pluginVersion = '0.2.21'
+    pluginVersion = '1.0.' + getVersion() + '-alpha'
     pluginGroup = "xyz.liut.gradleplugin"
 }
 
@@ -77,5 +77,19 @@ pluginBundle {
             // id is captured from java-gradle-plugin configuration
             displayName = 'ReleasePlugin'
         }
+    }
+}
+
+
+static int getVersion() {
+    def count = "git rev-list HEAD --count".execute().text.trim()
+    return count.toInteger()
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+
     }
 }

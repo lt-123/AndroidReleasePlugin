@@ -10,7 +10,7 @@ import xyz.liut.logcat.L
  */
 static def execCommand(String cmd) {
     println()
-    println "执行Command:\n$cmd"
+    println "exec:\n$cmd"
 
     int value = -1123
 
@@ -44,7 +44,7 @@ static def execCommand(String cmd) {
  */
 static def execWindowsPsCommand(String cmd) {
     println()
-    println "执行Command:\n$cmd"
+    println "exec:\n$cmd"
 
     int value = -1123
 
