@@ -1,3 +1,14 @@
+buildscript {
+    repositories {
+        google()
+        jcenter()
+
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:4.1.1'
+    }
+}
+
 plugins {
     id "groovy"
     // maven 使用 uploadArchives 发布到本地
@@ -23,6 +34,30 @@ sourceCompatibility = "8"
 targetCompatibility = "8"
 
 
+pluginBundle {
+    website = 'https://www.liut.xyz'
+    vcsUrl = 'https://github.com/lt-123/AndroidReleasePlugin'
+    description = 'Android release plugin'
+    tags = ['android', 'release']
+}
+
+gradlePlugin {
+    plugins {
+        releasePlugin {
+            id = 'xyz.liut.release'
+            displayName = 'apk-release'
+            description = 'Android release plugin'
+            implementationClass = pluginImplementationClass
+        }
+    }
+}
+
+static int getVersion() {
+    def count = "git rev-list HEAD --count".execute().text.trim()
+    return count.toInteger()
+}
+
+
 repositories {
     google()
     jcenter()
@@ -41,49 +76,4 @@ dependencies {
 
 //    compileOnly 'com.android.tools.build:gradle:4.1.1'
     implementation 'xyz.liut.logcat:logcat:0.1.6'
-}
-
-// 发布到本地
-uploadArchives {
-    repositories.mavenDeployer {
-        // 仓库的路径，此处是项目根目录下的 repo 的文件夹
-        repository(url: uri('../repo'))
-        // groupId ，自行定义，一般是包名
-        pom.groupId = group
-        // artifactId ，自行定义
-        pom.artifactId = pluginId
-        // //version 版本号
-        pom.version = version
-    }
-}
-
-// Use java-gradle-plugin to generate plugin descriptors and specify plugin ids
-gradlePlugin {
-    plugins {
-        releasePlugin {
-            id = pluginId
-            implementationClass = pluginImplementationClass
-        }
-    }
-}
-
-// The configuration example below shows the minimum required properties
-// configured to publish your plugin to the plugin portal
-pluginBundle {
-    website = 'https://www.liut.xyz'
-    vcsUrl = 'https://github.com/lt-123/AndroidReleasePlugin'
-    description = 'Android release plugin'
-    tags = ['android', 'release']
-
-    plugins {
-        greetingsPlugin {
-            // id is captured from java-gradle-plugin configuration
-            displayName = 'ReleasePlugin'
-        }
-    }
-}
-
-static int getVersion() {
-    def count = "git rev-list HEAD --count".execute().text.trim()
-    return count.toInteger()
 }
