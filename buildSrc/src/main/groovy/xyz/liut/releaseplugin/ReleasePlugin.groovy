@@ -96,17 +96,18 @@ class ReleasePlugin implements Plugin<Project> {
         localPropertiesMap = new HashMap<>()
 
         String localProperties = rootProject.projectDir.toString() + File.separator + "local.properties"
-        Properties properties = new Properties()
-        properties.load(new FileInputStream(new File(localProperties)))
-        properties.forEach(new BiConsumer<String, String>() {
-            @Override
-            void accept(String key, String value) {
-                localPropertiesMap.put(key, value)
-                L.d "localProperties $key = $value"
-            }
-        })
-
-
+        File ppFile = new File(localProperties)
+        if (ppFile.exists()) {
+            Properties properties = new Properties()
+            properties.load(new FileInputStream(ppFile))
+            properties.forEach(new BiConsumer<String, String>() {
+                @Override
+                void accept(String key, String value) {
+                    localPropertiesMap.put(key, value)
+                    L.d "localProperties $key = $value"
+                }
+            })
+        }
     }
 
 
