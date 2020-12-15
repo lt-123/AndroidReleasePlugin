@@ -1,5 +1,11 @@
-apply plugin: 'com.android.application'
-apply plugin: 'xyz.liut.release'
+plugins {
+    id "xyz.liut.release" // version "1.0.30-alpha"
+    id "com.android.application"
+}
+
+// 或者
+//apply plugin: 'com.android.application'
+//apply plugin: 'xyz.liut.release'
 
 android {
     compileSdkVersion 29

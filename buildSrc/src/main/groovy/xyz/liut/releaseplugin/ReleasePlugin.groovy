@@ -48,24 +48,26 @@ class ReleasePlugin implements Plugin<Project> {
         }
         L.i "rootProject.name=${project.rootProject.name}"
 
-        // 判断是否是 Android 项目
-        def app = project.plugins.withType(AppPlugin)
-        if (!app) {
-            throw new IllegalStateException("本插件仅支持 Android 项目")
-        }
-
-        isJiaguTaskSuccess = false
-        isReleaseTaskSuccess = false
-
         this.project = project
         this.rootProject = project.rootProject
-        this.android = project.android
+
         project.extensions.create('outputApk', ReleaseExtension)
         releaseExtension = project.outputApk
         releaseExtension.setWorkDir(project.projectDir.toString())
 
         rootProject.gradle.projectsEvaluated {
             L.i "projectsEvaluated..."
+
+            // 判断是否是 Android 项目
+            def app = project.plugins.withType(AppPlugin)
+            if (!app) {
+                throw new IllegalStateException("本插件仅支持 Android 项目")
+            }
+
+            isJiaguTaskSuccess = false
+            isReleaseTaskSuccess = false
+
+            this.android = project.android
 
             // local.properties
             initLocalProperties()
