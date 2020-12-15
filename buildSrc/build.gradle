@@ -29,7 +29,7 @@ repositories {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
+    testCompile 'junit:junit:4.13.1'
 
 //    compile gradleApi()
 //    compile localGroovy()
@@ -80,16 +80,7 @@ pluginBundle {
     }
 }
 
-
 static int getVersion() {
     def count = "git rev-list HEAD --count".execute().text.trim()
     return count.toInteger()
-}
-
-allprojects {
-    repositories {
-        google()
-        jcenter()
-
-    }
 }

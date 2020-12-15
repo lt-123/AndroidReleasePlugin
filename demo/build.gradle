@@ -3,14 +3,13 @@ apply plugin: 'xyz.liut.release'
 
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.2"
+
     defaultConfig {
         applicationId "xyz.liut.androidreleaseplugin"
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
-//        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     signingConfigs {
@@ -46,7 +45,7 @@ android {
 
         internal {
             dimension "default"
-            buildConfigField 'String', 'HOST', '"https://dev.internal.com/"'
+            buildConfigField 'String', 'HOST', '"https://dev.internal.com"'
         }
     }
 
@@ -97,7 +96,7 @@ outputApk {
 }
 
 gradle.projectsEvaluated {
-    println "=========projectsEvaluated======test2=="
+    println "=========projectsEvaluated========"
 
     releaseDebug.doFirst {
         println "是的伙计"
