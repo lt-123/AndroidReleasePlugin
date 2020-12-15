@@ -3,9 +3,9 @@
 ![GitHub Workflow Status deploy](https://img.shields.io/github/workflow/status/lt-123/AndroidReleasePlugin/deploy)
 ![GitHub language count](https://img.shields.io/github/languages/count/lt-123/AndroidReleasePlugin)
 ![GitHub](https://img.shields.io/github/license/lt-123/AndroidReleasePlugin)
-![GitHub Repo stars](https://img.shields.io/github/stars/lt-123/AndroidReleasePlugin?style=social)
 ![www.liut.xyz](https://img.shields.io/badge/blog-@liut.xyz-yellow.svg)
 [![Download](https://img.shields.io/badge/Download-plugins-red.svg)](https://plugins.gradle.org/plugin/xyz.liut.release)
+![GitHub Repo stars](https://img.shields.io/github/stars/lt-123/AndroidReleasePlugin?style=social)
 
 ## 功能说明
 

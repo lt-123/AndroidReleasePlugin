@@ -2,6 +2,7 @@ plugins {
     id "groovy"
     // maven 使用 uploadArchives 发布到本地
     id "maven"
+    id 'maven-publish'
     // 发布到 gradle plugin 仓库的两个插件
     id "com.gradle.plugin-publish" version "0.12.0"
     id "java-gradle-plugin"
@@ -28,16 +29,18 @@ repositories {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.13.1'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+//    testCompile 'junit:junit:4.13.1'
 
 //    compile gradleApi()
 //    compile localGroovy()
 
     // android plugin
-    //noinspection GradleDependency
-    compile 'com.android.tools.build:gradle:4.1.1'
-    compile 'xyz.liut.logcat:logcat:0.1.6'
+    implementation 'com.android.tools.build:gradle:4.1.1'
+
+//    compileOnly 'com.android.tools.build:gradle:4.1.1'
+    implementation 'xyz.liut.logcat:logcat:0.1.6'
 }
 
 // 发布到本地
@@ -57,7 +60,7 @@ uploadArchives {
 // Use java-gradle-plugin to generate plugin descriptors and specify plugin ids
 gradlePlugin {
     plugins {
-        greetingsPlugin {
+        releasePlugin {
             id = pluginId
             implementationClass = pluginImplementationClass
         }
@@ -69,7 +72,7 @@ gradlePlugin {
 pluginBundle {
     website = 'https://www.liut.xyz'
     vcsUrl = 'https://github.com/lt-123/AndroidReleasePlugin'
-    description = 'a Android release plugin'
+    description = 'Android release plugin'
     tags = ['android', 'release']
 
     plugins {

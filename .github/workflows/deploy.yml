@@ -2,10 +2,10 @@ name: deploy
 
 on:
   push:
-    branches:
-      - master
-    tags:
-      - '*'
+#    branches:
+#      - master
+#    tags:
+#      - '*'
 
 jobs:
   build:
