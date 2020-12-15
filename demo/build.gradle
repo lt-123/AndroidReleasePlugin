@@ -67,17 +67,15 @@ outputApk {
 
     def isJenkins = System.getenv("IS_JENKINS")
 
-    jiaguCmdParams = "-autosign -automulpkg tttt"
-
-    println "------------$isJenkins-------------"
+    jiaguCmdParams = "-autosign -automulpkg"
 
     // Jenkins 环境
     if (isJenkins == "true") {
         // 输出文件夹
-        outputPath = '/Users/liut/workspace'
+        outputPath = '/home/liut/workspace'
 
         // 加固输出文件夹
-        jiaguOutputPath = '/Users/liut/workspace'
+        jiaguOutputPath = '/home/liut/workspace'
 
         // 完后后不打开文件夹
         openDir = false
@@ -96,7 +94,7 @@ outputApk {
 }
 
 gradle.projectsEvaluated {
-    println "=========projectsEvaluated========"
+    println "...projectsEvaluated..."
 
     releaseDebug.doFirst {
         println "是的伙计"

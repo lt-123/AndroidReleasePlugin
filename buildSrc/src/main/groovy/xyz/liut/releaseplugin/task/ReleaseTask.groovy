@@ -83,15 +83,11 @@ class ReleaseTask extends BaseTask {
                         outputFile.toPath(),
                         StandardCopyOption.REPLACE_EXISTING)
 
-                L.d "outputFile $outputFile"
-
                 outputFiles.add(outputFile)
             }
         })
 
         success = true
-
-        L.i "-------${name} end, ${outputFiles.size()}---------"
     }
 
 }

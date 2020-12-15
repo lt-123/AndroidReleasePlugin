@@ -180,7 +180,7 @@ static void openPath(String path) {
         // linux
         else if (osName.contains("linux")) {
             if (new File("/usr/bin/nautilus").exists()) {
-                execCommand("nautilus $path &")
+                execCommand("nohup nautilus $path &")
             }
             // Other Desktop, 暂不处理
             else {

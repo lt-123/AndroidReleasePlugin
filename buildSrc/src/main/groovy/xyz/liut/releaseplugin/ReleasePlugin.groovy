@@ -46,7 +46,7 @@ class ReleasePlugin implements Plugin<Project> {
             // 避免 deamon 重复添加
             Logcat.handlers.add(new StdHandler(false, false))
         }
-        L.i "=====${project.rootProject.name}====="
+        L.i "rootProject.name=${project.rootProject.name}"
 
         // 判断是否是 Android 项目
         def app = project.plugins.withType(AppPlugin)
@@ -61,10 +61,11 @@ class ReleasePlugin implements Plugin<Project> {
         this.rootProject = project.rootProject
         this.android = project.android
         project.extensions.create('outputApk', ReleaseExtension)
-        this.releaseExtension = project.outputApk
+        releaseExtension = project.outputApk
+        releaseExtension.setWorkDir(project.projectDir.toString())
 
         rootProject.gradle.projectsEvaluated {
-            L.i "=========projectsEvaluated========"
+            L.i "projectsEvaluated..."
 
             // local.properties
             initLocalProperties()
@@ -77,14 +78,12 @@ class ReleasePlugin implements Plugin<Project> {
         }
 
         rootProject.gradle.buildFinished {
-            L.i "============buildFinished============"
-
             if (isJiaguTaskSuccess && releaseExtension.openDir) {
                 Utils.openPath(releaseExtension.jiaguOutputPath)
             } else if (isReleaseTaskSuccess && releaseExtension.openDir) {
                 Utils.openPath(releaseExtension.outputPath)
             }
-
+            L.i "buildFinished..."
         }
     }
 
