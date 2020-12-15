@@ -114,13 +114,8 @@ class ReleasePlugin implements Plugin<Project> {
      * 扩展参数
      */
     def initExtension() {
-        L.i "createExtension"
-
         Utils.checkDir(releaseExtension.outputPath)
         Utils.checkDir(releaseExtension.jiaguOutputPath)
-
-        L.d "outputPath $releaseExtension.outputPath"
-        L.d "jiaguOutputPath $releaseExtension.jiaguOutputPath"
     }
 
     /**
@@ -250,7 +245,7 @@ class ReleasePlugin implements Plugin<Project> {
 
         def jiaguTaskName = "jiagu$base"
 
-        L.i "create task: ${releaseName}、 ${jiaguTaskName}"
+        L.d "create task: ${releaseName}、 ${jiaguTaskName}"
 
         List<VariantDataBean> variantBeans = new ArrayList<>()
 

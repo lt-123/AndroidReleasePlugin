@@ -2,7 +2,6 @@ package xyz.liut.releaseplugin.bean
 
 import com.android.build.gradle.api.ApplicationVariant
 import org.gradle.api.Project
-import xyz.liut.logcat.L
 
 /**
  * input variant
@@ -72,8 +71,6 @@ class VariantDataBean implements Serializable{
         def output = outputs[0]
 
         def outputFile = output.outputFile
-
-        L.d outputFile
 
         VariantMetaData metaData = new VariantMetaData()
         metaData.name = project.name
