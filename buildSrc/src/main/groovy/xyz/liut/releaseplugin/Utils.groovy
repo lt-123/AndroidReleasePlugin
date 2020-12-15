@@ -2,20 +2,48 @@ package xyz.liut.releaseplugin
 
 import xyz.liut.logcat.L
 
+
+/**
+ * 删除文件夹
+ *
+ * @param dir 文件夹
+ */
+static void deleteDir(File dir) {
+    if (dir == null) return
+    if (dir.exists()) {
+        String[] files = dir.list()
+        if (!files && files.length > 0) {
+            for (int i = 0; i < files.length; i++) {
+                File f = new File(files[i])
+                if (f.isDirectory()) {
+                    deleteDir(f)
+                } else {
+                    f.delete()
+                }
+            }
+        }
+        dir.delete()
+    }
+}
+
 /**
  * 执行命令并返回 exitValue
  *
  * @param cmd 命令体
  * @return exitValue
  */
-static def execCommand(String cmd) {
+static int execCommand(String cmd) {
     println()
     println "exec:\n$cmd"
 
-    int value = -1123
+    String fileName = "delete_me"
+    FileWriter writer = new FileWriter(fileName, false)
+    writer.append("#!/usr/bin/env bash").append("\n").append(cmd)
+    writer.flush()
+    writer.close()
 
     try {
-        def proc = cmd.execute()
+        def proc = "bash $fileName".execute()
         proc.inputStream.eachLine {
             println it
         }
@@ -25,15 +53,20 @@ static def execCommand(String cmd) {
         proc.waitFor()
         println()
 
-        value = proc.exitValue()
+        int value = proc.exitValue()
+
+        new File(fileName).delete()
+
         if (value != 0) {
             throw new RuntimeException("命令执行失败 exitValue = $value\n$cmd")
+        } else {
+            return value
         }
     } catch (Exception e) {
+        new File(fileName).delete()
         throw new RuntimeException("命令执行失败 ${e.message}\n$cmd", e)
     }
 
-    return value
 }
 
 /**

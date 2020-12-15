@@ -192,6 +192,9 @@ class ReleasePlugin implements Plugin<Project> {
                 }
 
                 def signing = android.signingConfigs.find { it.name == apkSigning }
+                if (!signing) {
+                    throw new IllegalArgumentException("找不到名为${apkSigning}的签名配置")
+                }
 
                 def jiaguPath = jiaguProgramDir
                 def storeFile = signing.storeFile
@@ -272,7 +275,7 @@ class ReleasePlugin implements Plugin<Project> {
 
 
         // 生成 release task
-        def releaseTask = project.task(releaseName, type: ReleaseTask, dependsOn: releaseDependsOn, group: 'deploy', description: "assemble and rename to $releaseExtension.outputPath") {
+        project.task(releaseName, type: ReleaseTask, dependsOn: releaseDependsOn, group: 'deploy', description: "assemble and rename to $releaseExtension.outputPath") {
             variantDataBeans = variantBeans
             fileNameTemplate = releaseExtension.fileNameTemplate
             outputDir = releaseExtension.outputPath
@@ -285,7 +288,7 @@ class ReleasePlugin implements Plugin<Project> {
         }
 
         // 生成加固 task
-        project.task(jiaguTaskName, type: JiaguTask, dependsOn: releaseTask, group: 'jiagu', description: "jiagu and rename to $releaseExtension.outputPath") {
+        project.task(jiaguTaskName, type: JiaguTask, dependsOn: releaseDependsOn, group: 'jiagu', description: "jiagu and rename to $releaseExtension.outputPath") {
             jiaguProgram = JIAGU_360
             jiaguCmdParams = releaseExtension.jiaguCmdParams
             jiaguProgramDir = localPropertiesMap.get("jiaguPath")

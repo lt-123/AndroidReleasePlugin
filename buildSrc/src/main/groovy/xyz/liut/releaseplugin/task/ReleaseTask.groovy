@@ -76,10 +76,7 @@ class ReleaseTask extends BaseTask {
 
                 File outputFile = new File(outputDir + File.separator + fileName)
 
-                if (outputFile.exists()) outputFile.delete()
-
-
-                L.d "outputFile ${variantDataBean.apkFile}"
+                L.d "apkFile ${variantDataBean.apkFile}"
                 L.d "outputFile $outputFile"
 
                 Files.copy(variantDataBean.apkFile.toPath(),
