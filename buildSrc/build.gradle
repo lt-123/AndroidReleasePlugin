@@ -1,14 +1,3 @@
-buildscript {
-    repositories {
-        google()
-        jcenter()
-
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.1'
-    }
-}
-
 plugins {
     id "groovy"
     // maven 使用 uploadArchives 发布到本地
@@ -21,42 +10,12 @@ plugins {
 
 // 插件配置
 ext {
-    pluginId = 'xyz.liut.release'
+    pluginId = 'xyz.liut.apk-release'
     pluginImplementationClass = 'xyz.liut.releaseplugin.ReleasePlugin'
-    pluginVersion = '1.0.' + getVersion() + '-alpha'
-    pluginGroup = "xyz.liut.gradleplugin"
+    pluginVersion = '1.0.' + getVersion() + '-beta'
+    pluginGroup = "com.github.lt-123"
+    pluginArtifactId = "apk-release"
 }
-
-version = pluginVersion
-group = pluginGroup
-
-sourceCompatibility = "8"
-targetCompatibility = "8"
-
-
-pluginBundle {
-    website = 'https://www.liut.xyz'
-    vcsUrl = 'https://github.com/lt-123/AndroidReleasePlugin'
-    description = 'Android release plugin'
-    tags = ['android', 'release']
-}
-
-gradlePlugin {
-    plugins {
-        releasePlugin {
-            id = 'xyz.liut.release'
-            displayName = 'apk-release'
-            description = 'Android release plugin'
-            implementationClass = pluginImplementationClass
-        }
-    }
-}
-
-static int getVersion() {
-    def count = "git rev-list HEAD --count".execute().text.trim()
-    return count.toInteger()
-}
-
 
 repositories {
     google()
@@ -64,16 +23,45 @@ repositories {
 }
 
 dependencies {
+    testImplementation 'junit:junit:4.13.1'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-
-//    testCompile 'junit:junit:4.13.1'
-
-//    compile gradleApi()
-//    compile localGroovy()
-
-    // android plugin
     implementation 'com.android.tools.build:gradle:4.1.1'
-
-//    compileOnly 'com.android.tools.build:gradle:4.1.1'
     implementation 'xyz.liut.logcat:logcat:0.1.6'
+}
+
+gradlePlugin {
+    plugins {
+        releasePlugin {
+            id = pluginId
+            implementationClass = pluginImplementationClass
+        }
+    }
+}
+
+pluginBundle {
+    website = 'https://github.com/lt-123/AndroidReleasePlugin'
+    vcsUrl = 'https://github.com/lt-123/AndroidReleasePlugin'
+    description = 'Android release plugin'
+    tags = ['android', 'release']
+
+    plugins {
+        releasePlugin {
+            displayName = 'apk-release'
+            description = 'Android release plugin'
+            tags = ['android', 'release']
+            version = pluginVersion
+        }
+    }
+
+    mavenCoordinates {
+        groupId = pluginGroup
+        artifactId = pluginArtifactId
+        version = pluginVersion
+    }
+}
+
+
+static int getVersion() {
+    def count = "git rev-list HEAD --count".execute().text.trim()
+    return count.toInteger()
 }
