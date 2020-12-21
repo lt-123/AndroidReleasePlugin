@@ -28,6 +28,17 @@ ext {
 apply from: 'publish-gradle-m2.gradle'
 apply from: 'publish-jcenter.gradle'
 
+version = pluginVersion
+group = pluginGroup
+
+sourceCompatibility = "8"
+targetCompatibility = "8"
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
 repositories {
     google()
     jcenter()

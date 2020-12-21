@@ -1,6 +1,6 @@
 publishing {
     publications {
-        MyPublication(MavenPublication) {
+        mavenJava(MavenPublication) {
             from components.java
             groupId pluginGroup
             artifactId pluginArtifactId
@@ -18,6 +18,8 @@ bintray {
 
     println user
     println key
+
+    publications = ['mavenJava']
 
     dryRun = false //[Default: false] Whether to run this as dry-run, without deploying
     publish = true //[Default: false] Whether version should be auto published after an upload

@@ -9,44 +9,47 @@
 
 ## 功能说明
 
-- 打包指定变种 apk 输出到指定的文件夹并重命名 
+- 打包指定变种 apk 输出到指定的文件夹并重命名
 - 对指定变种 apk 进行加固（仅支持360加固）
 
 ## 使用
 
-### Using the plugins DSL
+### 添加 classpath
 
 ``` groovy
-plugins {
-  id "xyz.liut.release" version "1.x.x"     // 版本号
-}
-```
 
-### Using legacy plugin application
-
-#### 添加 classpath
-
-``` groovy
 buildscript {
-  repositories {
-    maven {
-      // 添加仓库
-      url "https://plugins.gradle.org/m2/"
+    repositories {
+        google()
+        jcenter()
+        // 添加仓库 (临时)
+        maven { url "https://dl.bintray.com/lt-123/maven" }
     }
-  }
-  dependencies {
-    // 添加 classpath
-    classpath "gradle.plugin.xyz.liut.gradleplugin:apk-release:版本号"
-  }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:4.1.1'
+        // 添加 classpath
+        classpath 'xyz.liut:apk-release:1.0.40-beta'
+    }
 }
 ```
 
-#### 在 app 模块中添加 plugin
+### 应用
 
 ``` groovy
+// 新方式 (推荐)
+plugins {
+    // 应用插件
+    id "xyz.liut.release"
+    id "com.android.application"
+}
+
+// ----------------
+
+// 或者 传统方式
 apply plugin: 'com.android.application'
 // 使用插件
 apply plugin: "xyz.liut.release"
+
 ```
 
 ### tasks 说明
