@@ -1,0 +1,52 @@
+publishing {
+    publications {
+        MyPublication(MavenPublication) {
+            from components.java
+            groupId pluginGroup
+            artifactId pluginArtifactId
+            version pluginVersion
+        }
+    }
+}
+
+bintray {
+    Properties local = new Properties()
+    local.load(new FileInputStream('local.properties'))
+
+    user = local.getProperty("user")
+    key = local.getProperty("key")
+
+    println user
+    println key
+
+    dryRun = false //[Default: false] Whether to run this as dry-run, without deploying
+    publish = true //[Default: false] Whether version should be auto published after an upload
+    override = true //[Default: false] Whether to override version artifacts already published
+
+    pkg {
+        repo = 'maven'
+        name = pluginArtifactId
+//        userOrg = 'liut.xyz'
+
+        //An optional organization name when the repo belongs to one of the user's orgs
+        desc = pluginDesc
+        websiteUrl = pluginVcsUrl
+        issueTrackerUrl = pluginVcsUrl + '/issues'
+        vcsUrl = "${pluginVcsUrl}.git"
+        licenses = ['Apache-2.0']
+        labels = pluginTags
+        publicDownloadNumbers = true
+//        attributes = ['a': ['ay1', 'ay2'], 'b': ['bee'], c: 'cee']
+
+        //Optional package-level attributes
+//        githubRepo = 'lt-123/AndroidReleasePlugin' //Optional Github repository
+//        githubReleaseNotesFile = 'README.md' //Optional Github readme file
+
+        //Optional version descriptor
+        version {
+            name = pluginVersion
+            desc = pluginDesc
+            attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin']
+        }
+    }
+}

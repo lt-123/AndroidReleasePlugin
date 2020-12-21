@@ -1,0 +1,30 @@
+gradlePlugin {
+    plugins {
+        releasePlugin {
+            id = pluginId
+            implementationClass = pluginImplementationClass
+        }
+    }
+}
+
+pluginBundle {
+    website = pluginVcsUrl
+    vcsUrl = pluginVcsUrl
+    description = pluginDesc
+    tags = pluginTags
+
+    plugins {
+        releasePlugin {
+            displayName = 'apk-release'
+            description = pluginDesc
+            tags = pluginTags
+            version = pluginVersion
+        }
+    }
+
+    mavenCoordinates {
+        groupId = pluginGroup
+        artifactId = pluginArtifactId
+        version = pluginVersion
+    }
+}
