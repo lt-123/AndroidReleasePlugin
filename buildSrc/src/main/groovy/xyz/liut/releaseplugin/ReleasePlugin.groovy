@@ -5,13 +5,13 @@ import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.api.ApplicationVariant
 import com.android.build.gradle.internal.dsl.BuildType
 import com.android.build.gradle.internal.dsl.ProductFlavor
-import com.android.utils.StringHelper
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 import xyz.liut.logcat.L
 import xyz.liut.logcat.Logcat
 import xyz.liut.logcat.handler.StdHandler
+import xyz.liut.releaseplugin.bean.VariantDataBean
 import xyz.liut.releaseplugin.task.BaseTask
 import xyz.liut.releaseplugin.task.JiaguTask
 import xyz.liut.releaseplugin.task.ReleaseTask
@@ -46,25 +46,28 @@ class ReleasePlugin implements Plugin<Project> {
             // 避免 deamon 重复添加
             Logcat.handlers.add(new StdHandler(false, false))
         }
-        L.i "=====${project.rootProject.name}====="
-
-        // 判断是否是 Android 项目
-        def app = project.plugins.withType(AppPlugin)
-        if (!app) {
-            throw new IllegalStateException("本插件仅支持 Android 项目")
-        }
-
-        isJiaguTaskSuccess = false
-        isReleaseTaskSuccess = false
+        L.i "rootProject.name=${project.rootProject.name}"
 
         this.project = project
         this.rootProject = project.rootProject
-        this.android = project.android
+
         project.extensions.create('outputApk', ReleaseExtension)
-        this.releaseExtension = project.outputApk
+        releaseExtension = project.outputApk
+        releaseExtension.setWorkDir(project.projectDir.toString())
 
         rootProject.gradle.projectsEvaluated {
-            L.i "=========projectsEvaluated========"
+            L.i "projectsEvaluated..."
+
+            // 判断是否是 Android 项目
+            def app = project.plugins.withType(AppPlugin)
+            if (!app) {
+                throw new IllegalStateException("本插件仅支持 Android 项目")
+            }
+
+            isJiaguTaskSuccess = false
+            isReleaseTaskSuccess = false
+
+            this.android = project.android
 
             // local.properties
             initLocalProperties()
@@ -77,14 +80,12 @@ class ReleasePlugin implements Plugin<Project> {
         }
 
         rootProject.gradle.buildFinished {
-            L.i "============buildFinished============"
-
             if (isJiaguTaskSuccess && releaseExtension.openDir) {
                 Utils.openPath(releaseExtension.jiaguOutputPath)
             } else if (isReleaseTaskSuccess && releaseExtension.openDir) {
                 Utils.openPath(releaseExtension.outputPath)
             }
-
+            L.i "buildFinished..."
         }
     }
 
@@ -95,17 +96,18 @@ class ReleasePlugin implements Plugin<Project> {
         localPropertiesMap = new HashMap<>()
 
         String localProperties = rootProject.projectDir.toString() + File.separator + "local.properties"
-        Properties properties = new Properties()
-        properties.load(new FileInputStream(new File(localProperties)))
-        properties.forEach(new BiConsumer<String, String>() {
-            @Override
-            void accept(String key, String value) {
-                localPropertiesMap.put(key, value)
-                L.d "localProperties $key = $value"
-            }
-        })
-
-
+        File ppFile = new File(localProperties)
+        if (ppFile.exists()) {
+            Properties properties = new Properties()
+            properties.load(new FileInputStream(ppFile))
+            properties.forEach(new BiConsumer<String, String>() {
+                @Override
+                void accept(String key, String value) {
+                    localPropertiesMap.put(key, value)
+                    L.d "localProperties $key = $value"
+                }
+            })
+        }
     }
 
 
@@ -113,13 +115,8 @@ class ReleasePlugin implements Plugin<Project> {
      * 扩展参数
      */
     def initExtension() {
-        L.i "createExtension"
-
         Utils.checkDir(releaseExtension.outputPath)
         Utils.checkDir(releaseExtension.jiaguOutputPath)
-
-        L.d "outputPath $releaseExtension.outputPath"
-        L.d "jiaguOutputPath $releaseExtension.jiaguOutputPath"
     }
 
     /**
@@ -192,6 +189,9 @@ class ReleasePlugin implements Plugin<Project> {
                 }
 
                 def signing = android.signingConfigs.find { it.name == apkSigning }
+                if (!signing) {
+                    throw new IllegalArgumentException("找不到名为${apkSigning}的签名配置")
+                }
 
                 def jiaguPath = jiaguProgramDir
                 def storeFile = signing.storeFile
@@ -231,11 +231,11 @@ class ReleasePlugin implements Plugin<Project> {
      */
     def createTask(String buildTypeName, String flavorName) {
         if (buildTypeName != null)
-            buildTypeName = StringHelper.capitalize(buildTypeName)
+            buildTypeName = buildTypeName.capitalize()
         else
             buildTypeName = ""
         if (flavorName != null)
-            flavorName = StringHelper.capitalize(flavorName)
+            flavorName = flavorName.capitalize()
         else
             flavorName = ""
 
@@ -246,27 +246,37 @@ class ReleasePlugin implements Plugin<Project> {
 
         def jiaguTaskName = "jiagu$base"
 
-        L.i "create task: ${releaseName}、 ${jiaguTaskName}"
+        L.d "create task: ${releaseName}、 ${jiaguTaskName}"
+
+        List<VariantDataBean> variantBeans = new ArrayList<>()
 
         // 所有变种
-        Set<ApplicationVariant> variants = android.applicationVariants.findAll { applicationVariant ->
-            if (buildTypeName == "" && flavorName == "") {
-                return true
-            } else if (buildTypeName == "" && flavorName != "") {
-                return flavorName.equalsIgnoreCase(applicationVariant.flavorName)
-            } else if (buildTypeName != "" && flavorName == "") {
-                return buildTypeName.equalsIgnoreCase(applicationVariant.buildType.name)
-            } else {
-                return (buildTypeName.equalsIgnoreCase(applicationVariant.buildType.name) && flavorName.equalsIgnoreCase(applicationVariant.flavorName))
-            }
-        }
+        android.applicationVariants
+                .findAll { applicationVariant ->    // 找到指定名称的变种
+                    if (buildTypeName == "" && flavorName == "") {
+                        return true
+                    } else if (buildTypeName == "" && flavorName != "") {
+                        return flavorName.equalsIgnoreCase(applicationVariant.flavorName)
+                    } else if (buildTypeName != "" && flavorName == "") {
+                        return buildTypeName.equalsIgnoreCase(applicationVariant.buildType.name)
+                    } else {
+                        return (buildTypeName.equalsIgnoreCase(applicationVariant.buildType.name) && flavorName.equalsIgnoreCase(applicationVariant.flavorName))
+                    }
+                }
+                .forEach(new Consumer<ApplicationVariant>() {   // 遍历，转换为 apkFile
+                    @Override
+                    void accept(ApplicationVariant variant) {
+                        variantBeans.add(VariantDataBean.newInstance(project, variant))
+                    }
+                })
+
 
         // 生成 release task
-        def releaseTask = project.task(releaseName, type: ReleaseTask, dependsOn: releaseDependsOn, group: 'deploy', description: "assemble and rename to $releaseExtension.outputPath") {
-            inputVariants = variants
+        project.task(releaseName, type: ReleaseTask, dependsOn: releaseDependsOn, group: 'deploy', description: "assemble and rename to $releaseExtension.outputPath") {
+            variantDataBeans = variantBeans
             fileNameTemplate = releaseExtension.fileNameTemplate
             outputDir = releaseExtension.outputPath
-            outputFiles = new HashSet<>()
+            outputFiles = new ArrayList<>()
 
             doLast {
                 isReleaseTaskSuccess = success
@@ -275,11 +285,11 @@ class ReleasePlugin implements Plugin<Project> {
         }
 
         // 生成加固 task
-        project.task(jiaguTaskName, type: JiaguTask, dependsOn: releaseTask, group: 'jiagu', description: "jiagu and rename to $releaseExtension.outputPath") {
+        project.task(jiaguTaskName, type: JiaguTask, dependsOn: releaseDependsOn, group: 'jiagu', description: "jiagu and rename to $releaseExtension.outputPath") {
             jiaguProgram = JIAGU_360
             jiaguCmdParams = releaseExtension.jiaguCmdParams
             jiaguProgramDir = localPropertiesMap.get("jiaguPath")
-            apkFiles = releaseTask.outputFiles
+            variantDataBeans = variantBeans
             fileNameTemplate = releaseExtension.jiaguFileNameTemplate
             outputDir = releaseExtension.jiaguOutputPath
 

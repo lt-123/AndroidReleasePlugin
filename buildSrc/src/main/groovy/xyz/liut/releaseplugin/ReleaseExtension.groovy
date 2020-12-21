@@ -17,7 +17,7 @@ class ReleaseExtension {
     /**
      * 加固文件名
      */
-    private String jiaguFileNameTemplate
+    private String jiaguFileNameTemplate = DEFAULT_FILE_NAME_FORMAT
 
     /**
      * 输出路径
@@ -39,48 +39,69 @@ class ReleaseExtension {
      */
     private boolean openDir = false
 
-    String getFileNameTemplate() {
-        return fileNameTemplate
+    private String workDir;
+
+    void setWorkDir(String workDir) {
+        this.workDir = workDir
     }
 
-    void setFileNameTemplate(String fileNameTemplate) {
-        this.fileNameTemplate = fileNameTemplate
+    String getFileNameTemplate() {
+        return fileNameTemplate
     }
 
     String getJiaguFileNameTemplate() {
         return jiaguFileNameTemplate
     }
 
-    void setJiaguFileNameTemplate(String jiaguFileNameTemplate) {
-        this.jiaguFileNameTemplate = jiaguFileNameTemplate
-    }
-
     String getOutputPath() {
-        return outputPath
-    }
-
-    void setOutputPath(String outputPath) {
-        this.outputPath = outputPath
+        // 相对路径
+        if (outputPath.startsWith(".")) {
+            return workDir + File.separator + outputPath
+        }
+        // 绝对路径
+        else {
+            return outputPath
+        }
     }
 
     String getJiaguOutputPath() {
-        return jiaguOutputPath
-    }
-
-    void setJiaguOutputPath(String jiaguOutputPath) {
-        this.jiaguOutputPath = jiaguOutputPath
+        // 相对路径
+        if (outputPath.startsWith(".")) {
+            return workDir + File.separator + jiaguOutputPath
+        }
+        // 绝对路径
+        else {
+            return jiaguOutputPath
+        }
     }
 
     boolean getOpenDir() {
         return openDir
     }
 
-    void setOpenDir(boolean openDir) {
-        this.openDir = openDir
-    }
-
     String getJiaguCmdParams() {
         return jiaguCmdParams
+    }
+
+
+    void setFileNameTemplate(String fileNameTemplate) {
+        this.fileNameTemplate = fileNameTemplate
+    }
+
+    void setJiaguFileNameTemplate(String jiaguFileNameTemplate) {
+        this.jiaguFileNameTemplate = jiaguFileNameTemplate
+    }
+
+    void setOutputPath(String outputPath) {
+        this.outputPath = outputPath
+    }
+
+    void setJiaguOutputPath(String jiaguOutputPath) {
+        this.jiaguOutputPath = jiaguOutputPath
+    }
+
+    void setOpenDir(boolean openDir) {
+        this.openDir = openDir
     }
 
     void setJiaguCmdParams(String jiaguCmdParams) {

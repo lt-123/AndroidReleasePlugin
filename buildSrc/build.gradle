@@ -1,19 +1,32 @@
 plugins {
     id "groovy"
-    // maven 使用 uploadArchives 发布到本地
-    id "maven"
+    // 使用 uploadArchives 发布到本地
+    id 'maven-publish'
     // 发布到 gradle plugin 仓库的两个插件
-    id "com.gradle.plugin-publish" version "0.10.1"
+    id "com.gradle.plugin-publish" version "0.12.0"
     id "java-gradle-plugin"
+    // 发布到 jcenter
+    id "com.jfrog.bintray" version "1.8.5"
 }
 
 // 插件配置
 ext {
-    pluginId = 'xyz.liut.release'
+    pluginId = 'xyz.liut.apk-release'
     pluginImplementationClass = 'xyz.liut.releaseplugin.ReleasePlugin'
-    pluginVersion = '0.2.17'
-    pluginGroup = "xyz.liut.gradleplugin"
+    pluginVersion = '1.0.' + getVersion() + '-beta'
+//    pluginGroup = "com.github.lt-123"
+//    pluginGroup = "xyz.liut.gradleplugin"
+    pluginGroup = "xyz.liut"
+    pluginArtifactId = "apk-release"
+
+    pluginVcsUrl = 'https://github.com/lt-123/AndroidReleasePlugin'
+    pluginDesc = 'Android release plugin'
+    pluginTags = ['android', 'release']
+
 }
+
+apply from: 'publish-gradle-m2.gradle'
+apply from: 'publish-jcenter.gradle'
 
 version = pluginVersion
 group = pluginGroup
@@ -21,6 +34,10 @@ group = pluginGroup
 sourceCompatibility = "8"
 targetCompatibility = "8"
 
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
 
 repositories {
     google()
@@ -28,54 +45,13 @@ repositories {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
-
-//    compile gradleApi()
-//    compile localGroovy()
-
-    // android plugin
-    //noinspection GradleDependency
-    compile 'com.android.tools.build:gradle:3.4.2'
-    compile 'xyz.liut.logcat:logcat:0.1.6'
+    testImplementation 'junit:junit:4.13.1'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.tools.build:gradle:4.1.1'
+    implementation 'xyz.liut.logcat:logcat:0.1.6'
 }
 
-// 发布到本地
-uploadArchives {
-    repositories.mavenDeployer {
-        // 仓库的路径，此处是项目根目录下的 repo 的文件夹
-        repository(url: uri('../repo'))
-        // groupId ，自行定义，一般是包名
-        pom.groupId = group
-        // artifactId ，自行定义
-        pom.artifactId = pluginId
-        // //version 版本号
-        pom.version = version
-    }
-}
-
-// Use java-gradle-plugin to generate plugin descriptors and specify plugin ids
-gradlePlugin {
-    plugins {
-        greetingsPlugin {
-            id = pluginId
-            implementationClass = pluginImplementationClass
-        }
-    }
-}
-
-// The configuration example below shows the minimum required properties
-// configured to publish your plugin to the plugin portal
-pluginBundle {
-    website = 'https://github.com/lt-123/AndroidReleasePlugin'
-    vcsUrl = 'https://github.com/lt-123/AndroidReleasePlugin'
-    description = '一个 Android 打包相关的插件'
-    tags = ['android', 'release']
-
-    plugins {
-        greetingsPlugin {
-            // id is captured from java-gradle-plugin configuration
-            displayName = 'ReleasePlugin'
-        }
-    }
+static int getVersion() {
+    def count = "git rev-list HEAD --count".execute().text.trim()
+    return count.toInteger()
 }

@@ -1,9 +1,14 @@
 package xyz.liut.releaseplugin.task
 
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
+import xyz.liut.logcat.L
 import xyz.liut.releaseplugin.Utils
-import xyz.liut.releaseplugin.bean.FileNameTemplateBean
+import xyz.liut.releaseplugin.bean.VariantDataBean
 
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.util.function.Consumer
 
 class JiaguTask extends BaseTask {
@@ -16,31 +21,37 @@ class JiaguTask extends BaseTask {
     /**
      * 使用的加固程序， 目前仅支持 360
      */
+    @Input
     int jiaguProgram = JIAGU_360
 
     /**
      * 加固程序路径
      */
+    @Input
     String jiaguProgramDir
 
     /**
      * 360 加固参数
      */
+    @Input
     String jiaguCmdParams
 
     /**
      * 待加固的 apk
      */
-    Set<FileNameTemplateBean> apkFiles
+    @Input
+    List<VariantDataBean> variantDataBeans
 
     /**
      * 文件名模板
      */
+    @Input
     String fileNameTemplate
 
     /**
      * 输出路径
      */
+    @OutputDirectory
     String outputDir
 
     @TaskAction
@@ -48,8 +59,8 @@ class JiaguTask extends BaseTask {
         if (!jiaguProgramDir) {
             throw new IllegalArgumentException("jiaguPath 为空, 请在项目根目录的 local.properties 中配置 jiaguPath")
         }
-        if (!apkFiles) {
-            throw new IllegalArgumentException("apkFiles 为空")
+        if (!variantDataBeans) {
+            throw new IllegalArgumentException("输入apk为空")
         }
         if (!outputDir) {
             throw new IllegalArgumentException("outputDir 为空")
@@ -61,25 +72,25 @@ class JiaguTask extends BaseTask {
 
         switch (jiaguProgram) {
             case JIAGU_360:
-                apkFiles.forEach(new Consumer<FileNameTemplateBean>() {
+                variantDataBeans.forEach(new Consumer<VariantDataBean>() {
                     @Override
-                    void accept(FileNameTemplateBean bean) {
-                        // 判断是否存在模板
-                        if (fileNameTemplate) {
-                            // 根据模板生成文件名
-                            String finalFileName = bean.fileNameTemplate(fileNameTemplate)
-                            // 使用 tmp 文件加固， 加固产生的文件会跟 tmp 文件名一致
-                            File tmp = new File(outputDir, "${finalFileName}.apk")
-                            if (tmp.exists()) tmp.delete()
-                            bean.outputFile.renameTo(tmp)
-                            // 加固 tmp
-                            jiagu360(tmp, new File(outputDir))
+                    void accept(VariantDataBean variantDataBean) {
+                        // 根据模板生成文件名
+                        String finalFileName = variantDataBean.metaData.fileNameTemplate(fileNameTemplate)
+                        // 使用 tmpFile 文件加固， 加固产生的文件会跟 tmpFile 文件名一致
+                        File tmpFile = new File(outputDir + File.separator + "tmp", "${finalFileName}.apk")
+                        File tmpDir = tmpFile.parentFile
+                        tmpDir.mkdirs()
 
-                            // 删除 tmp
-                            if (tmp.exists()) tmp.delete()
-                        } else {
-                            jiagu360(bean.outputFile, new File(outputDir))
-                        }
+                        L.d "apkFile ${variantDataBean.apkFile}"
+                        L.d "outputFile $tmpFile"
+
+                        Files.copy(variantDataBean.apkFile.toPath(), tmpFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+                        // 加固 tmp
+                        jiagu360(tmpFile, new File(outputDir))
+
+                        // 删除临时文件夹
+                        Utils.deleteDir(tmpDir)
                     }
                 })
                 break

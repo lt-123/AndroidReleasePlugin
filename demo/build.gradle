@@ -1,16 +1,21 @@
-apply plugin: 'com.android.application'
-apply plugin: 'xyz.liut.release'
+plugins {
+    id "xyz.liut.release" // version "1.0.30-alpha"
+    id "com.android.application"
+}
+
+// 或者
+//apply plugin: 'com.android.application'
+//apply plugin: 'xyz.liut.release'
 
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.2"
+
     defaultConfig {
         applicationId "xyz.liut.androidreleaseplugin"
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
-//        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     signingConfigs {
@@ -41,12 +46,12 @@ android {
     productFlavors {
         official {
             dimension "default"
-            buildConfigField 'String', 'HOST', '"https://www.xxxx.com"'
+            buildConfigField 'String', 'HOST', '"https://www.official.com"'
         }
 
         internal {
             dimension "default"
-            buildConfigField 'String', 'HOST', '"https://dev.xxxx.com/"'
+            buildConfigField 'String', 'HOST', '"https://dev.internal.com"'
         }
     }
 
@@ -68,17 +73,15 @@ outputApk {
 
     def isJenkins = System.getenv("IS_JENKINS")
 
-    jiaguCmdParams = "-autosign -automulpkg tttt"
-
-    println "------------$isJenkins-------------"
+    jiaguCmdParams = "-autosign -automulpkg"
 
     // Jenkins 环境
     if (isJenkins == "true") {
         // 输出文件夹
-        outputPath = '/Users/liut/workspace'
+        outputPath = '/home/liut/workspace'
 
         // 加固输出文件夹
-        jiaguOutputPath = '/Users/liut/workspace'
+        jiaguOutputPath = '/home/liut/workspace'
 
         // 完后后不打开文件夹
         openDir = false
@@ -96,17 +99,8 @@ outputApk {
 
 }
 
-dependencies {
-//    implementation fileTree(dir: 'libs', include: ['*.jar'])
-//    implementation 'androidx.appcompat:appcompat:1.0.2'
-//    testImplementation 'junit:junit:4.12'
-//    androidTestImplementation 'androidx.test:runner:1.2.0'
-//    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-}
-
-
 gradle.projectsEvaluated {
-    println "=========projectsEvaluated======test2=="
+    println "...projectsEvaluated..."
 
     releaseDebug.doFirst {
         println "是的伙计"
