@@ -4,7 +4,7 @@
 ![GitHub language count](https://img.shields.io/github/languages/count/lt-123/AndroidReleasePlugin)
 ![GitHub](https://img.shields.io/github/license/lt-123/AndroidReleasePlugin)
 ![www.liut.xyz](https://img.shields.io/badge/blog-@liut.xyz-yellow.svg)
-[![Download](https://img.shields.io/badge/Download-plugins-red.svg)](https://plugins.gradle.org/plugin/xyz.liut.release)
+[![Download](https://api.bintray.com/packages/lt-123/maven/apk-release/images/download.svg)](https://bintray.com/lt-123/maven/apk-release/)
 ![GitHub Repo stars](https://img.shields.io/github/stars/lt-123/AndroidReleasePlugin?style=social)
 
 ## 功能说明
@@ -22,13 +22,14 @@ buildscript {
     repositories {
         google()
         jcenter()
-        // 添加仓库 (临时)
+        // 添加仓库
         maven { url "https://dl.bintray.com/lt-123/maven" }
     }
     dependencies {
+        // 最低支持的版本
         classpath 'com.android.tools.build:gradle:4.1.1'
         // 添加 classpath
-        classpath 'xyz.liut:apk-release:1.0.40-beta'
+        classpath 'xyz.liut:apk-release:${最新版本号见上方铭牌}'
     }
 }
 ```
