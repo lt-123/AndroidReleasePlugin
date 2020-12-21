@@ -12,9 +12,9 @@ static void deleteDir(File dir) {
     if (dir == null) return
     if (dir.exists()) {
         String[] files = dir.list()
-        if (!files && files.length > 0) {
+        if (files && files.length > 0) {
             for (int i = 0; i < files.length; i++) {
-                File f = new File(files[i])
+                File f = new File(dir, files[i])
                 if (f.isDirectory()) {
                     deleteDir(f)
                 } else {
