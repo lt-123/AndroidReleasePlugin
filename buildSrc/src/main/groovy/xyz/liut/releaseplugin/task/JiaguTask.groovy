@@ -49,6 +49,12 @@ class JiaguTask extends BaseTask {
     String fileNameTemplate
 
     /**
+     * 工作文件夹
+     */
+    @Input
+    String workDir
+
+    /**
      * 输出路径
      */
     @OutputDirectory
@@ -78,7 +84,7 @@ class JiaguTask extends BaseTask {
                         // 根据模板生成文件名
                         String finalFileName = variantDataBean.metaData.fileNameTemplate(fileNameTemplate)
                         // 使用 tmpFile 文件加固， 加固产生的文件会跟 tmpFile 文件名一致
-                        File tmpFile = new File(outputDir + File.separator + "tmp", "${finalFileName}.apk")
+                        File tmpFile = new File(workDir, "${finalFileName}.apk")
                         File tmpDir = tmpFile.parentFile
                         tmpDir.mkdirs()
 

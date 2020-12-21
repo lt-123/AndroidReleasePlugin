@@ -12,9 +12,9 @@ static void deleteDir(File dir) {
     if (dir == null) return
     if (dir.exists()) {
         String[] files = dir.list()
-        if (!files && files.length > 0) {
+        if (files && files.length > 0) {
             for (int i = 0; i < files.length; i++) {
-                File f = new File(files[i])
+                File f = new File(dir, files[i])
                 if (f.isDirectory()) {
                     deleteDir(f)
                 } else {
@@ -24,117 +24,6 @@ static void deleteDir(File dir) {
         }
         dir.delete()
     }
-}
-
-/**
- * 执行命令并返回 exitValue
- *
- * @param cmd 命令体
- * @return exitValue
- */
-static int execCommand(String cmd) {
-    println()
-    println "exec:\n$cmd"
-
-    String fileName = "delete_me"
-    FileWriter writer = new FileWriter(fileName, false)
-    writer.append("#!/usr/bin/env bash").append("\n").append(cmd)
-    writer.flush()
-    writer.close()
-
-    try {
-        def proc = "bash $fileName".execute()
-        proc.inputStream.eachLine {
-            println it
-        }
-        proc.errorStream.eachLine {
-            printlnError "ERROR: $it"
-        }
-        proc.waitFor()
-        println()
-
-        int value = proc.exitValue()
-
-        new File(fileName).delete()
-
-        if (value != 0) {
-            throw new RuntimeException("命令执行失败 exitValue = $value\n$cmd")
-        } else {
-            return value
-        }
-    } catch (Exception e) {
-        new File(fileName).delete()
-        throw new RuntimeException("命令执行失败 ${e.message}\n$cmd", e)
-    }
-
-}
-
-/**
- * 执行 windows powershell 命令并返回 exitValue
- *
- * @param cmd 命令体
- * @return exitValue
- */
-static def execWindowsPsCommand(String cmd) {
-    println()
-    println "exec:\n$cmd"
-
-    int value = -1123
-
-    try {
-        String[] cmds = new String[3]
-        cmds[0] = "powershell"
-        cmds[1] = "/c"
-        cmds[2] = cmd
-        def proc = Runtime.getRuntime().exec(cmds)
-
-        proc.inputStream.eachLine {
-            println it
-        }
-        proc.errorStream.eachLine {
-            printlnError "ERROR: $it"
-        }
-        proc.waitFor()
-        println()
-
-        value = proc.exitValue()
-        if (value != 0) {
-            throw new RuntimeException("命令执行失败 exitValue = $value\n$cmd")
-        }
-    } catch (Exception e) {
-        throw new RuntimeException("命令执行失败 ${e.message}\n$cmd", e)
-    }
-
-    return value
-}
-
-/**
- * 获取系统 uname
- *
- * @return uanme
- */
-static String uname() {
-    def proc = "uname -s".execute()
-
-    String uname = "none"
-
-    proc.inputStream.eachLine {
-        // 结果只有一行
-        if (it != null)
-            uname = it
-        else
-            println "获取系统uname 为空"
-    }
-    proc.errorStream.eachLine {
-        printlnError "ERROR: $it"
-    }
-    proc.waitFor()
-
-    if (proc.exitValue() != 0) {
-        new RuntimeException("获取系统uname失败").printStackTrace()
-    }
-
-    return uname
 }
 
 /**
@@ -156,6 +45,47 @@ static void checkDir(String dirPath) {
 }
 
 /**
+ * 执行命令并返回 exitValue
+ *
+ * @param cmd 命令体
+ * @return exitValue
+ */
+static int execCommand(String cmd) {
+
+    String osName = System.properties.get("os.name")
+    L.i osName
+    if (!osName) {
+        printlnError "未知操作系统"
+        osName = ""
+    }
+
+    osName = osName.toLowerCase()
+
+    try {
+        // mac
+        if (osName.contains("mac")) {
+            return ShellUtils.execCmd(cmd)
+        }
+        // win
+        else if (osName.contains("windows")) {
+            return ShellUtils.execWindowsPsCmd(cmd)
+        }
+        // linux
+        else if (osName.contains("linux")) {
+            return ShellUtils.execCmdByFile(cmd)
+        }
+        // Other System， 暂不处理
+        else {
+            printlnError "unknow system: $osName"
+            return ShellUtils.execCmd(cmd)
+        }
+    } catch (Exception ignored) {
+    }
+
+    return -1
+}
+
+/**
  * 打开文件夹/文件
  *
  * @param path 文件/文件夹路径
@@ -171,16 +101,16 @@ static void openPath(String path) {
     try {
         // mac
         if (osName.contains("mac")) {
-            execCommand("open $path")
+            ShellUtils.execCmd("open $path")
         }
         // win
         else if (osName.contains("windows")) {
-            execWindowsPsCommand("explorer $path")
+            ShellUtils.execWindowsPsCmd("explorer $path")
         }
         // linux
         else if (osName.contains("linux")) {
             if (new File("/usr/bin/nautilus").exists()) {
-                execCommand("nohup nautilus $path &")
+                ShellUtils.execCmdByFile("nohup nautilus $path &")
             }
             // Other Desktop, 暂不处理
             else {
@@ -194,18 +124,4 @@ static void openPath(String path) {
     } catch (Exception ignored) {
     }
 
-}
-
-// ===========================================
-
-static void println() {
-    L.i ""
-}
-
-static void println(obj) {
-    L.i obj
-}
-
-static void printlnError(obj) {
-    L.e obj
 }
