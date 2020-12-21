@@ -11,7 +11,9 @@ publishing {
 
 bintray {
     Properties local = new Properties()
-    local.load(new FileInputStream('local.properties'))
+    File file = new File('local.properties')
+    if (file.exists())
+        local.load(new FileInputStream(file))
 
     user = local.getProperty("user")
     key = local.getProperty("key")
