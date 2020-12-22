@@ -55,7 +55,7 @@ static int execCommand(String cmd) {
     String osName = System.properties.get("os.name")
     L.i osName
     if (!osName) {
-        printlnError "未知操作系统"
+        L.e "未知操作系统"
         osName = ""
     }
 
@@ -64,7 +64,7 @@ static int execCommand(String cmd) {
     try {
         // mac
         if (osName.contains("mac")) {
-            return ShellUtils.execCmd(cmd)
+            return ShellUtils.execCmdByFile(cmd)
         }
         // win
         else if (osName.contains("windows")) {
@@ -74,9 +74,9 @@ static int execCommand(String cmd) {
         else if (osName.contains("linux")) {
             return ShellUtils.execCmdByFile(cmd)
         }
-        // Other System， 暂不处理
+        // Other System
         else {
-            printlnError "unknow system: $osName"
+            L.e "unknow system: $osName"
             return ShellUtils.execCmd(cmd)
         }
     } catch (Exception ignored) {
@@ -93,7 +93,7 @@ static int execCommand(String cmd) {
 static void openPath(String path) {
     String osName = System.properties.get("os.name")
     if (!osName) {
-        printlnError "未知操作系统"
+        L.e "未知操作系统"
     }
 
     osName = osName.toLowerCase()
@@ -114,12 +114,12 @@ static void openPath(String path) {
             }
             // Other Desktop, 暂不处理
             else {
-                printlnError "On linux, only support nautilus."
+                L.e "On linux, only support nautilus."
             }
         }
         // Other System， 暂不处理
         else {
-            printlnError "The current system is not compatible with the open folder function: $osName"
+            L.e "The current system is not compatible with the open folder function: $osName"
         }
     } catch (Exception ignored) {
     }
