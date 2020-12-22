@@ -56,7 +56,7 @@ class ReleaseExtension {
     String getOutputPath() {
         // 相对路径
         if (outputPath.startsWith(".")) {
-            return workDir + File.separator + outputPath
+            return new File(workDir, outputPath).getPath()
         }
         // 绝对路径
         else {
@@ -67,7 +67,7 @@ class ReleaseExtension {
     String getJiaguOutputPath() {
         // 相对路径
         if (outputPath.startsWith(".")) {
-            return workDir + File.separator + jiaguOutputPath
+            return new File(workDir, jiaguOutputPath).getPath()
         }
         // 绝对路径
         else {
